@@ -229,19 +229,20 @@ export function renderFormatA(
   // Concentric Rings
   ctx.save();
 
-  // Outer Ring
-  ctx.lineWidth = 32;
+  // Outer Ring (Wider bold line)
+  ctx.lineWidth = 46;
   ctx.strokeStyle = theme.primaryYellow;
-  drawShapePath(ctx, photoShape, cropArea, 20);
+  drawShapePath(ctx, photoShape, cropArea, 28);
   ctx.stroke();
 
-  // Inner Ring
-  ctx.lineWidth = 14;
+  // Inner Ring (Wider bold line)
+  ctx.lineWidth = 24;
   ctx.strokeStyle = theme.accentPink;
-  drawShapePath(ctx, photoShape, cropArea, 45);
+  drawShapePath(ctx, photoShape, cropArea, 62);
   ctx.stroke();
 
   ctx.restore();
+
 
   // 4. Top Devanagari "गोवा" Sticker Badge
   drawGoaDevanagariSticker(
@@ -359,13 +360,14 @@ export function renderFormatB(
     ctx.restore();
   }
 
-  // Photo Frame Border
+  // Photo Frame Border (Wider bold line)
   ctx.save();
-  ctx.lineWidth = 14;
+  ctx.lineWidth = 22;
   ctx.strokeStyle = theme.primaryYellow;
   drawShapePath(ctx, photoShape, photoArea);
   ctx.stroke();
   ctx.restore();
+
 
   // 6. Name in Extra Large Bold Serif Font (130px)
   let currentY = photoY + photoSize + 140;
