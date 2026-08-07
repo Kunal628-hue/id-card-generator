@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Upload, Image as ImageIcon, RefreshCw, AlertCircle, Sparkles } from 'lucide-react';
+import { FileUp, RefreshCw, AlertCircle } from 'lucide-react';
 import { loadImageFromFile } from '../utils/canvasRenderer';
 
 interface ImageUploaderProps {
@@ -14,10 +14,10 @@ function createSampleAvatarImage(): Promise<HTMLImageElement> {
     canvas.height = 800;
     const ctx = canvas.getContext('2d');
     if (ctx) {
-      ctx.fillStyle = '#005632';
+      ctx.fillStyle = '#005833';
       ctx.fillRect(0, 0, 800, 800);
 
-      ctx.fillStyle = '#FFEB00';
+      ctx.fillStyle = '#FFECA8';
       ctx.beginPath();
       ctx.arc(400, 320, 140, 0, Math.PI * 2);
       ctx.fill();
@@ -29,7 +29,7 @@ function createSampleAvatarImage(): Promise<HTMLImageElement> {
       ctx.fillRect(380, 310, 40, 15);
 
       // Body
-      ctx.fillStyle = '#FFEB00';
+      ctx.fillStyle = '#FFECA8';
       ctx.beginPath();
       ctx.ellipse(400, 720, 240, 220, 0, 0, Math.PI * 2);
       ctx.fill();
@@ -78,7 +78,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
       <input
         ref={fileInputRef}
         type="file"
@@ -91,6 +91,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         }}
       />
 
+      {/* Dashed Dropzone matching Screenshot 1 */}
       <div
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
         onDragLeave={() => setIsDragging(false)}
@@ -100,58 +101,54 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           if (e.dataTransfer.files?.[0]) handleFileChange(e.dataTransfer.files[0]);
         }}
         onClick={() => fileInputRef.current?.click()}
-        className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all duration-300 ${
+        className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${
           isDragging
-            ? 'border-[#FFEB00] bg-[#FFEB00]/10 scale-[1.01]'
+            ? 'border-[#FFECA8] bg-[#FFECA8]/10'
             : hasImage
-            ? 'border-emerald-500/50 bg-[#131B2B] hover:border-emerald-400'
-            : 'border-white/15 bg-[#131B2B]/70 hover:border-[#FFEB00]/80 hover:bg-[#131B2B]'
+            ? 'border-[#FFECA8]/80 bg-[#005833]/60'
+            : 'border-[#FFECA8]/60 bg-transparent hover:border-[#FFECA8] hover:bg-[#005833]/30'
         }`}
       >
-        <div className="flex flex-col items-center justify-center gap-2.5">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#006B3E] to-[#00824A] border border-white/10 flex items-center justify-center text-[#FFEB00] shadow-md">
-            {loading ? (
-              <RefreshCw className="w-6 h-6 animate-spin text-[#FFEB00]" />
-            ) : hasImage ? (
-              <ImageIcon className="w-6 h-6 text-[#FFEB00]" />
-            ) : (
-              <Upload className="w-6 h-6 text-[#FFEB00]" />
-            )}
-          </div>
+        <div className="flex flex-col items-center justify-center gap-3">
+          {loading ? (
+            <RefreshCw className="w-8 h-8 animate-spin text-[#FFECA8]" />
+          ) : (
+            <div className="w-10 h-10 rounded-lg bg-[#FFECA8] flex items-center justify-center text-black">
+              <FileUp className="w-6 h-6 stroke-[2.5]" />
+            </div>
+          )}
 
-          <div>
+          <div className="space-y-1">
             <p className="text-sm font-bold text-white">
-              {hasImage ? 'Click or drag to replace photo' : 'Upload your photo (JPG, PNG, HEIC)'}
+              {hasImage ? 'Click to replace your photo.' : 'Drop your photo here or click to upload.'}
             </p>
-            <p className="text-xs text-slate-400 mt-1">
-              Supports iPhone photos, portrait & landscape formats
+            <p className="text-xs text-slate-200">
+              JPG, PNG, HEIC supported.
             </p>
           </div>
         </div>
 
         {errorMsg && (
-          <div className="mt-3 text-xs text-[#FF007A] flex items-center justify-center gap-1 font-semibold">
+          <div className="mt-3 text-xs text-[#FFB3D9] flex items-center justify-center gap-1 font-semibold">
             <AlertCircle className="w-3.5 h-3.5" />
             <span>{errorMsg}</span>
           </div>
         )}
       </div>
 
-      {!hasImage && (
-        <div className="mt-3 text-center">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              loadSample();
-            }}
-            className="inline-flex items-center gap-1.5 text-xs text-[#FFEB00] hover:text-yellow-300 bg-[#131B2B] hover:bg-[#1C273D] border border-white/10 px-3.5 py-1.5 rounded-full transition-all cursor-pointer font-semibold shadow-sm"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-[#FF007A]" />
-            <span>Test with Demo Sample Photo</span>
-          </button>
-        </div>
-      )}
+      {/* Try demo photo link at bottom right */}
+      <div className="mt-2 text-right">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            loadSample();
+          }}
+          className="text-xs text-[#FFECA8] hover:underline font-medium cursor-pointer"
+        >
+          Try demo photo
+        </button>
+      </div>
     </div>
   );
 };

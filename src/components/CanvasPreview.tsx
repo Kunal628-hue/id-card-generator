@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { ActiveFormat, UserDetails, ImageTransform, PresetTheme } from '../types';
 import { renderFormatA, renderFormatB } from '../utils/canvasRenderer';
-import { Download, ArrowRight, Check } from 'lucide-react';
+import { Download, Share2, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface CanvasPreviewProps {
@@ -92,7 +92,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
       particleCount: 80,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ['#FFEB00', '#FF007A', '#006B3E'],
+      colors: ['#FFECA8', '#FF007A', '#006B3E'],
     });
 
     const link = document.createElement('a');
@@ -124,15 +124,15 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
     handleCopyClipboard();
 
     const text = encodeURIComponent(
-      `My Hacker House Goa 2026 frame is ready. See you in Goa! #FrameInGoa @HHGoa`
+      `Just generated my official @HackerHouseGoa frame! See you in the sun. 🌴 #Goa2026 #FrameInGoa`
     );
     const intentUrl = `https://x.com/intent/tweet?text=${text}`;
     window.open(intentUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-4">
-      {/* Canvas Container */}
+    <div className="w-full flex flex-col items-center gap-5">
+      {/* Canvas Container Box (Screenshot 1 Live Preview Box) */}
       <div
         ref={containerRef}
         onMouseDown={handleMouseDown}
@@ -142,56 +142,46 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleMouseUp}
-        className={`relative w-full max-w-[500px] aspect-square rounded-[2rem] p-3 bg-[#005632] border border-[#00824A] shadow-2xl overflow-hidden select-none ${
+        className={`relative w-full max-w-[480px] aspect-square rounded-xl p-2 bg-[#121212] border border-[#FFECA8]/20 shadow-2xl overflow-hidden select-none ${
           image ? 'cursor-grab active:cursor-grabbing' : ''
         }`}
       >
         <canvas
           ref={canvasRef}
-          className="w-full h-full object-contain rounded-[1.5rem] bg-[#006B3E]"
+          className="w-full h-full object-contain rounded-lg bg-[#006B3E]"
         />
-
-        {image && (
-          <div className="absolute top-5 left-5 right-5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex justify-center">
-            <span className="bg-[#00381F]/90 text-[#FFEB00] text-xs font-semibold px-3.5 py-1 rounded-full shadow border border-[#00703C]">
-              Drag on photo to adjust position
-            </span>
-          </div>
-        )}
       </div>
 
-      {/* Action Buttons Bar */}
-      <div className="w-full max-w-[500px] space-y-2.5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Yellow Download Button */}
-          <button
-            type="button"
-            onClick={handleDownload}
-            className="btn-yellow-glow flex items-center justify-center gap-2 font-extrabold text-sm md:text-base py-3.5 px-6 rounded-full cursor-pointer"
-          >
-            <Download className="w-4 h-4 stroke-[3]" />
-            <span>Download PNG</span>
-          </button>
+      {/* Action Buttons & Tweet Text Note matching Screenshot 1 */}
+      <div className="w-full max-w-[480px] space-y-3">
+        {/* DOWNLOAD PNG Button */}
+        <button
+          type="button"
+          onClick={handleDownload}
+          className="btn-yellow-mockup w-full py-3.5 px-6 text-xl flex items-center justify-center gap-2 cursor-pointer shadow-md"
+        >
+          <Download className="w-5 h-5 stroke-[2.5]" />
+          <span>DOWNLOAD PNG</span>
+        </button>
 
-          {/* Hot Pink Share to X Button */}
-          <button
-            type="button"
-            onClick={handleShareToX}
-            className="btn-pink-glow flex items-center justify-center gap-2 font-extrabold text-sm md:text-base py-3.5 px-6 rounded-full cursor-pointer"
-          >
-            <ArrowRight className="w-4 h-4" />
-            <span>Share to X</span>
-          </button>
-        </div>
+        {/* SHARE TO X Button */}
+        <button
+          type="button"
+          onClick={handleShareToX}
+          className="btn-pink-mockup w-full py-3.5 px-6 text-xl flex items-center justify-center gap-2 cursor-pointer shadow-md"
+        >
+          <Share2 className="w-5 h-5 stroke-[2.5]" />
+          <span>SHARE TO X</span>
+        </button>
 
-        {/* Share caption note */}
-        <p className="text-xs text-center text-slate-400 font-medium">
-          Shares as: <span className="text-[#FFEB00] font-bold">"My Hacker House Goa 2026 frame is ready. #FrameInGoa"</span>
+        {/* Tweet text note */}
+        <p className="text-xs text-center text-slate-200 font-mono pt-1">
+          Tweet text: "Just generated my official @HackerHouseGoa frame! See you in the sun. 🌴 #Goa2026 #FrameInGoa"
         </p>
 
         {copied && (
-          <div className="text-center">
-            <span className="inline-flex items-center gap-1 text-xs text-[#FFEB00] bg-[#131B2B] font-bold px-3.5 py-1 rounded-full border border-white/10 shadow">
+          <div className="text-center pt-1">
+            <span className="inline-flex items-center gap-1 text-xs text-[#FFECA8] bg-[#005833] font-bold px-3.5 py-1 rounded-full border border-[#FFECA8]/40 shadow">
               <Check className="w-3.5 h-3.5" />
               Image copied to clipboard for easy pasting into X!
             </span>

@@ -1,7 +1,7 @@
 import React from 'react';
 import type { UserDetails } from '../../types';
 import { BUILDER_TITLES } from '../../types';
-import { RefreshCw, User, Code, Sparkles } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 
 interface BadgeFormProps {
   details: UserDetails;
@@ -29,59 +29,56 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
   };
 
   return (
-    <div className="space-y-4 pt-1">
-      {/* Name Input */}
+    <div className="space-y-4 pt-2">
+      {/* Full Name */}
       <div>
-        <label className="block text-xs font-bold text-slate-300 mb-1.5 ml-1 flex items-center gap-1.5">
-          <User className="w-3.5 h-3.5 text-[#FFEB00]" />
-          Full Name
+        <label className="block font-hh-display text-base tracking-wider text-white mb-1.5 uppercase">
+          FULL NAME
         </label>
         <input
           type="text"
-          placeholder="Ada Lovelace"
+          placeholder="e.g. Satoshi Nakamoto"
           value={details.name}
           onChange={(e) => handleChange('name', e.target.value)}
-          className="hh-input-field w-full py-3 px-4 text-sm font-semibold text-white placeholder-slate-500"
+          className="mockup-input w-full py-3 px-4 text-sm text-black placeholder-slate-400"
         />
       </div>
 
-      {/* Role / Stack Input */}
+      {/* Role / Stack */}
       <div>
-        <label className="block text-xs font-bold text-slate-300 mb-1.5 ml-1 flex items-center gap-1.5">
-          <Code className="w-3.5 h-3.5 text-[#FF007A]" />
-          Role / stack
+        <label className="block font-hh-display text-base tracking-wider text-white mb-1.5 uppercase">
+          ROLE / STACK
         </label>
         <input
           type="text"
-          placeholder="Full-stack • React / Node"
+          placeholder="e.g. Fullstack Web3"
           value={details.role}
           onChange={(e) => handleChange('role', e.target.value)}
-          className="hh-input-field w-full py-3 px-4 text-sm font-semibold text-white placeholder-slate-500"
+          className="mockup-input w-full py-3 px-4 text-sm text-black placeholder-slate-400"
         />
       </div>
 
-      {/* Builder title Input with Refresh Button */}
+      {/* Builder Title */}
       <div>
-        <div className="flex items-center justify-between mb-1.5 ml-1">
-          <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-[#FFEB00]" />
-            Builder title
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="font-hh-display text-base tracking-wider text-white uppercase">
+            BUILDER TITLE
           </label>
           <button
             type="button"
             onClick={handleGenerateTitle}
-            className="text-xs font-bold text-[#FFEB00] hover:text-yellow-300 flex items-center gap-1 bg-[#131B2B] hover:bg-[#1C273D] border border-white/10 px-2.5 py-1 rounded-lg transition-all cursor-pointer"
+            title="Randomize title"
+            className="text-white hover:text-[#FFECA8] transition-colors p-1 cursor-pointer"
           >
-            <RefreshCw className="w-3 h-3 text-[#FF007A]" />
-            <span>Randomize</span>
+            <RefreshCw className="w-4 h-4" />
           </button>
         </div>
         <input
           type="text"
-          placeholder="Full-Stack Wanderer"
+          placeholder="e.g. Protocol Engineer"
           value={details.title}
           onChange={(e) => handleChange('title', e.target.value)}
-          className="hh-input-field w-full py-3 px-4 text-sm font-semibold text-[#FFEB00] placeholder-slate-500"
+          className="mockup-input w-full py-3 px-4 text-sm text-black placeholder-slate-400"
         />
       </div>
     </div>
