@@ -132,7 +132,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
 
   return (
     <div className="w-full flex flex-col items-center gap-4">
-      {/* Outer Canvas Box Container */}
+      {/* Canvas Container */}
       <div
         ref={containerRef}
         onMouseDown={handleMouseDown}
@@ -142,7 +142,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleMouseUp}
-        className={`relative w-full max-w-[500px] aspect-square rounded-[2rem] p-2.5 bg-[#005632] border border-[#00824A] shadow-2xl overflow-hidden select-none ${
+        className={`relative w-full max-w-[500px] aspect-square rounded-[2rem] p-3 bg-[#005632] border border-[#00824A] shadow-2xl overflow-hidden select-none ${
           image ? 'cursor-grab active:cursor-grabbing' : ''
         }`}
       >
@@ -152,8 +152,8 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
         />
 
         {image && (
-          <div className="absolute top-4 left-4 right-4 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex justify-center">
-            <span className="bg-[#00381F]/90 text-[#FFEB00] text-xs font-semibold px-3 py-1 rounded-full shadow border border-[#00703C]">
+          <div className="absolute top-5 left-5 right-5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex justify-center">
+            <span className="bg-[#00381F]/90 text-[#FFEB00] text-xs font-semibold px-3.5 py-1 rounded-full shadow border border-[#00703C]">
               Drag on photo to adjust position
             </span>
           </div>
@@ -167,17 +167,17 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
           <button
             type="button"
             onClick={handleDownload}
-            className="flex items-center justify-center gap-2 bg-[#FFEB00] hover:bg-[#FFF242] text-[#004D2D] font-extrabold text-sm md:text-base py-3.5 px-6 rounded-full shadow-lg transition-all active:scale-95 cursor-pointer"
+            className="btn-yellow-glow flex items-center justify-center gap-2 font-extrabold text-sm md:text-base py-3.5 px-6 rounded-full cursor-pointer"
           >
             <Download className="w-4 h-4 stroke-[3]" />
-            <span>Download</span>
+            <span>Download PNG</span>
           </button>
 
           {/* Hot Pink Share to X Button */}
           <button
             type="button"
             onClick={handleShareToX}
-            className="flex items-center justify-center gap-2 bg-[#FF007A] hover:bg-[#FF2690] text-white font-extrabold text-sm md:text-base py-3.5 px-6 rounded-full shadow-lg transition-all active:scale-95 cursor-pointer"
+            className="btn-pink-glow flex items-center justify-center gap-2 font-extrabold text-sm md:text-base py-3.5 px-6 rounded-full cursor-pointer"
           >
             <ArrowRight className="w-4 h-4" />
             <span>Share to X</span>
@@ -185,13 +185,13 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
         </div>
 
         {/* Share caption note */}
-        <p className="text-xs text-center text-[#A8E6CF] font-medium">
+        <p className="text-xs text-center text-slate-400 font-medium">
           Shares as: <span className="text-[#FFEB00] font-bold">"My Hacker House Goa 2026 frame is ready. #FrameInGoa"</span>
         </p>
 
         {copied && (
           <div className="text-center">
-            <span className="inline-flex items-center gap-1 text-xs text-[#FFEB00] bg-[#004226] font-bold px-3 py-1 rounded-full border border-[#007843]">
+            <span className="inline-flex items-center gap-1 text-xs text-[#FFEB00] bg-[#131B2B] font-bold px-3.5 py-1 rounded-full border border-white/10 shadow">
               <Check className="w-3.5 h-3.5" />
               Image copied to clipboard for easy pasting into X!
             </span>

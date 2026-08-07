@@ -2,7 +2,7 @@
 
 @layer base {
   body {
-    background-color: #006B3E;
+    background-color: #090D16;
     color: #FFFFFF;
     font-family: 'Plus Jakarta Sans', sans-serif;
     overflow-x: hidden;
@@ -17,80 +17,80 @@
   }
 }
 
-/* Official HH Goa 2026 Design Tokens */
-.hh-card {
-  background-color: #005632;
-  border: 1px solid #00824A;
+/* Premium Glassmorphism & UI Design System */
+.hh-glass-card {
+  background: rgba(18, 25, 38, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 235, 0, 0.12);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   border-radius: 1.75rem;
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
 }
 
-.hh-card-inner {
-  background-color: #004D2D;
-  border: 1px solid #00703C;
-  border-radius: 1.25rem;
+.hh-glass-panel {
+  background: rgba(13, 18, 28, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.hh-input {
-  background-color: #004226;
-  border: 1px solid #007843;
+.hh-input-field {
+  background-color: #131B2B;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: #FFFFFF;
   border-radius: 1rem;
+  transition: all 0.2s ease;
 }
 
-.hh-input:focus {
+.hh-input-field:focus {
   border-color: #FFEB00;
+  box-shadow: 0 0 0 3px rgba(255, 235, 0, 0.15);
   outline: none;
 }
 
-.btn-yellow {
-  background-color: #FFEB00;
+.btn-emerald-glow {
+  background: linear-gradient(135deg, #006B3E 0%, #00824A 100%);
+  color: #FFFFFF;
+  border-radius: 9999px;
+  font-weight: 800;
+  transition: all 0.25 ease;
+  box-shadow: 0 8px 25px -4px rgba(0, 107, 62, 0.5);
+}
+
+.btn-emerald-glow:hover {
+  background: linear-gradient(135deg, #007D48 0%, #009656 100%);
+  transform: translateY(-1.5px);
+  box-shadow: 0 12px 30px -4px rgba(0, 107, 62, 0.6);
+}
+
+.btn-yellow-glow {
+  background: linear-gradient(135deg, #FFEB00 0%, #FFD700 100%);
   color: #004D2D;
   border-radius: 9999px;
   font-weight: 800;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 25px -4px rgba(255, 235, 0, 0.3);
 }
 
-.btn-yellow:hover {
-  background-color: #FFF242;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px -4px rgba(255, 235, 0, 0.4);
+.btn-yellow-glow:hover {
+  background: linear-gradient(135deg, #FFF242 0%, #FFE21A 100%);
+  transform: translateY(-1.5px);
+  box-shadow: 0 12px 30px -4px rgba(255, 235, 0, 0.45);
 }
 
-.btn-yellow:active {
-  transform: translateY(0px);
-}
-
-.btn-pink {
-  background-color: #FF007A;
+.btn-pink-glow {
+  background: linear-gradient(135deg, #FF007A 0%, #E6006E 100%);
   color: #FFFFFF;
   border-radius: 9999px;
   font-weight: 800;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 25px -4px rgba(255, 0, 122, 0.35);
 }
 
-.btn-pink:hover {
-  background-color: #FF2690;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px -4px rgba(255, 0, 122, 0.4);
-}
-
-.btn-pink:active {
-  transform: translateY(0px);
-}
-
-.btn-secondary-hh {
-  background-color: #00502E;
-  color: #FFFFFF;
-  border: 1px solid #007D48;
-  border-radius: 9999px;
-  font-weight: 700;
-  transition: all 0.2s ease;
-}
-
-.btn-secondary-hh:hover {
-  background-color: #006037;
-  border-color: #FFEB00;
+.btn-pink-glow:hover {
+  background: linear-gradient(135deg, #FF2690 0%, #FF007A 100%);
+  transform: translateY(-1.5px);
+  box-shadow: 0 12px 30px -4px rgba(255, 0, 122, 0.5);
 }
 
 /* Custom Scrollbar */
@@ -99,12 +99,12 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #006B3E;
+  background: #090D16;
 }
 ::-webkit-scrollbar-thumb {
-  background: #004D2D;
+  background: #1E293B;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00703C;
+  background: #334155;
 }

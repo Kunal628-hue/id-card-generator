@@ -1,6 +1,6 @@
 import React from 'react';
 import type { ImageTransform } from '../../types';
-import { ZoomIn, ZoomOut, RotateCw, RotateCcw } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCw, RotateCcw, Move } from 'lucide-react';
 
 interface PhotoAdjusterProps {
   transform: ImageTransform;
@@ -37,9 +37,12 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
   };
 
   return (
-    <div className="bg-[#003B20] p-3.5 rounded-2xl border border-[#00703C] space-y-3">
-      <div className="flex items-center justify-between text-xs font-bold text-[#E6F4EC]">
-        <span>Photo Framing</span>
+    <div className="bg-[#131B2B] p-4 rounded-2xl border border-white/10 space-y-3.5 shadow-md">
+      <div className="flex items-center justify-between text-xs font-bold text-slate-200">
+        <span className="flex items-center gap-1.5 uppercase tracking-wider">
+          <Move className="w-3.5 h-3.5 text-[#FFEB00]" />
+          Photo Framing & Zoom
+        </span>
         <button
           type="button"
           onClick={handleReset}
@@ -50,18 +53,18 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Zoom */}
-        <div className="space-y-1">
-          <div className="flex justify-between text-xs text-[#A8E6CF] font-semibold">
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-xs text-slate-300 font-semibold">
             <span>Zoom</span>
-            <span>{transform.zoom.toFixed(2)}x</span>
+            <span className="text-[#FFEB00] font-mono">{transform.zoom.toFixed(2)}x</span>
           </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => updateField('zoom', Math.max(0.5, transform.zoom - 0.1))}
-              className="p-1 rounded-lg bg-[#004D2D] text-white hover:bg-[#006037]"
+              className="p-1.5 rounded-lg bg-slate-800 text-white hover:bg-slate-700 text-xs font-bold"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
@@ -72,12 +75,12 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
               step="0.05"
               value={transform.zoom}
               onChange={(e) => updateField('zoom', parseFloat(e.target.value))}
-              className="w-full accent-[#FFEB00] bg-[#004D2D] h-1.5 rounded-lg cursor-pointer"
+              className="w-full accent-[#FFEB00] bg-slate-800 h-1.5 rounded-lg cursor-pointer"
             />
             <button
               type="button"
               onClick={() => updateField('zoom', Math.min(3, transform.zoom + 0.1))}
-              className="p-1 rounded-lg bg-[#004D2D] text-white hover:bg-[#006037]"
+              className="p-1.5 rounded-lg bg-slate-800 text-white hover:bg-slate-700 text-xs font-bold"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
@@ -85,17 +88,17 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
         </div>
 
         {/* Rotate */}
-        <div className="space-y-1">
-          <label className="text-xs text-[#A8E6CF] font-semibold block">
+        <div className="space-y-1.5">
+          <label className="text-xs text-slate-300 font-semibold block">
             Rotation
           </label>
           <button
             type="button"
             onClick={handleRotate}
-            className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 bg-[#004D2D] hover:bg-[#006037] text-white rounded-xl text-xs font-bold transition-all border border-[#00703C] cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all border border-white/10 cursor-pointer"
           >
             <RotateCw className="w-3.5 h-3.5 text-[#FFEB00]" />
-            <span>Rotate ({transform.rotation}°)</span>
+            <span>Rotate 90° ({transform.rotation}°)</span>
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Image as ImageIcon, RefreshCw, AlertCircle } from 'lucide-react';
+import { Upload, Image as ImageIcon, RefreshCw, AlertCircle, Sparkles } from 'lucide-react';
 import { loadImageFromFile } from '../utils/canvasRenderer';
 
 interface ImageUploaderProps {
@@ -58,7 +58,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       onImageLoaded(loadedImg);
     } catch (err) {
       console.error(err);
-      setErrorMsg('Failed to process image. Try a JPG or PNG photo.');
+      setErrorMsg('Failed to process image. Try a JPG, PNG, or HEIC photo.');
     } finally {
       setLoading(false);
     }
@@ -100,35 +100,37 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           if (e.dataTransfer.files?.[0]) handleFileChange(e.dataTransfer.files[0]);
         }}
         onClick={() => fileInputRef.current?.click()}
-        className={`border-2 border-dashed rounded-2xl p-7 text-center cursor-pointer transition-all duration-200 ${
+        className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all duration-300 ${
           isDragging
-            ? 'border-[#FFEB00] bg-[#004226]'
+            ? 'border-[#FFEB00] bg-[#FFEB00]/10 scale-[1.01]'
             : hasImage
-            ? 'border-[#007D48] bg-[#00492B] hover:border-[#FFEB00]'
-            : 'border-[#007D48] bg-[#00492B]/80 hover:border-[#FFEB00] hover:bg-[#00492B]'
+            ? 'border-emerald-500/50 bg-[#131B2B] hover:border-emerald-400'
+            : 'border-white/15 bg-[#131B2B]/70 hover:border-[#FFEB00]/80 hover:bg-[#131B2B]'
         }`}
       >
-        <div className="flex flex-col items-center justify-center gap-2">
-          <div className="w-12 h-12 rounded-full bg-[#00381F] flex items-center justify-center text-[#FFEB00]">
+        <div className="flex flex-col items-center justify-center gap-2.5">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#006B3E] to-[#00824A] border border-white/10 flex items-center justify-center text-[#FFEB00] shadow-md">
             {loading ? (
               <RefreshCw className="w-6 h-6 animate-spin text-[#FFEB00]" />
-            ) : (
+            ) : hasImage ? (
               <ImageIcon className="w-6 h-6 text-[#FFEB00]" />
+            ) : (
+              <Upload className="w-6 h-6 text-[#FFEB00]" />
             )}
           </div>
 
           <div>
-            <p className="text-base font-bold text-white">
-              {hasImage ? 'Tap to replace photo' : 'Tap to upload a photo'}
+            <p className="text-sm font-bold text-white">
+              {hasImage ? 'Click or drag to replace photo' : 'Upload your photo (JPG, PNG, HEIC)'}
             </p>
-            <p className="text-xs text-[#A8E6CF] mt-0.5 font-medium">
-              JPG, PNG, or HEIC works best
+            <p className="text-xs text-slate-400 mt-1">
+              Supports iPhone photos, portrait & landscape formats
             </p>
           </div>
         </div>
 
         {errorMsg && (
-          <div className="mt-2 text-xs text-[#FF007A] flex items-center justify-center gap-1 font-semibold">
+          <div className="mt-3 text-xs text-[#FF007A] flex items-center justify-center gap-1 font-semibold">
             <AlertCircle className="w-3.5 h-3.5" />
             <span>{errorMsg}</span>
           </div>
@@ -136,16 +138,17 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       </div>
 
       {!hasImage && (
-        <div className="mt-2.5 text-center">
+        <div className="mt-3 text-center">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
               loadSample();
             }}
-            className="text-xs text-[#FFEB00] hover:underline underline-offset-4 font-semibold transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs text-[#FFEB00] hover:text-yellow-300 bg-[#131B2B] hover:bg-[#1C273D] border border-white/10 px-3.5 py-1.5 rounded-full transition-all cursor-pointer font-semibold shadow-sm"
           >
-            Or test with Sample Demo Photo
+            <Sparkles className="w-3.5 h-3.5 text-[#FF007A]" />
+            <span>Test with Demo Sample Photo</span>
           </button>
         </div>
       )}

@@ -21,9 +21,9 @@ function drawRoundedRect(
 }
 
 /**
- * Draw a clean, cool developer avatar vector placeholder when no custom photo is uploaded yet
+ * Draw an ultra-clean, elegant vector camera & photo placeholder when no custom photo is loaded
  */
-function drawAvatarPlaceholder(
+function drawVectorPlaceholder(
   ctx: CanvasRenderingContext2D,
   cropArea: { x: number; y: number; width: number; height: number },
   isCircle: boolean = false
@@ -40,45 +40,41 @@ function drawAvatarPlaceholder(
   }
   ctx.clip();
 
-  // Dark Emerald Background
+  // Rich Dark Emerald Background
   ctx.fillStyle = '#004729';
   ctx.fill();
 
   const cx = cropArea.x + cropArea.width / 2;
   const cy = cropArea.y + cropArea.height / 2;
 
-  // Head Circle
-  ctx.fillStyle = '#FFEB00';
-  ctx.beginPath();
-  ctx.arc(cx, cy - 70, cropArea.width * 0.22, 0, Math.PI * 2);
+  // Sleek Camera Icon Body
+  const iconW = cropArea.width * 0.28;
+  const iconH = cropArea.width * 0.22;
+  
+  ctx.fillStyle = '#00331D';
+  drawRoundedRect(ctx, cx - iconW / 2, cy - iconH / 2, iconW, iconH, 20);
   ctx.fill();
-
-  // Sunglasses Accent
-  ctx.fillStyle = '#00381F';
-  const glassW = cropArea.width * 0.13;
-  const glassH = cropArea.width * 0.075;
-  ctx.fillRect(cx - glassW - 12, cy - 90, glassW, glassH);
-  ctx.fillRect(cx + 12, cy - 90, glassW, glassH);
-  ctx.fillRect(cx - 12, cy - 80, 24, 8);
-
-  // Headphones Accent
-  ctx.lineWidth = 14;
-  ctx.strokeStyle = '#FF007A';
-  ctx.beginPath();
-  ctx.arc(cx, cy - 70, cropArea.width * 0.24, Math.PI, 0);
+  ctx.strokeStyle = '#FFEB00';
+  ctx.lineWidth = 6;
   ctx.stroke();
 
-  // Shoulders Silhouette
-  ctx.fillStyle = '#FFEB00';
+  // Camera Lens Ring
   ctx.beginPath();
-  ctx.ellipse(cx, cy + cropArea.height * 0.38, cropArea.width * 0.4, cropArea.height * 0.28, 0, 0, Math.PI * 2);
+  ctx.arc(cx, cy, iconH * 0.32, 0, Math.PI * 2);
+  ctx.strokeStyle = '#FFEB00';
+  ctx.lineWidth = 6;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, iconH * 0.16, 0, Math.PI * 2);
+  ctx.fillStyle = '#FF007A';
   ctx.fill();
 
-  // Prompt Text
-  ctx.fillStyle = '#00381F';
+  // Elegant Prompt Text
+  ctx.fillStyle = '#FFEB00';
   ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('TAP TO UPLOAD PHOTO', cx, cy + cropArea.height * 0.4);
+  ctx.fillText('UPLOAD PHOTO', cx, cy + iconH / 2 + 70);
 
   ctx.restore();
 }
@@ -230,7 +226,7 @@ export function renderFormatA(
   if (img) {
     drawTransformedImage(ctx, img, cropArea, transform, true);
   } else {
-    drawAvatarPlaceholder(ctx, cropArea, true);
+    drawVectorPlaceholder(ctx, cropArea, true);
   }
 
   // 4. Concentric Dual Ring Frames (Yellow + Hot Pink)
@@ -347,7 +343,7 @@ export function renderFormatB(
   ctx.fillText('OFFICIAL BUILDER PASS  •  GOA 2026', CANVAS_SIZE / 2, 245);
   ctx.restore();
 
-  // 3. Photo Area (Larger 780px Photo Frame)
+  // 3. Photo Area
   const photoSize = 780;
   const photoX = (CANVAS_SIZE - photoSize) / 2;
   const photoY = 295;
@@ -362,7 +358,7 @@ export function renderFormatB(
   if (img) {
     drawTransformedImage(ctx, img, photoArea, transform, false);
   } else {
-    drawAvatarPlaceholder(ctx, photoArea, false);
+    drawVectorPlaceholder(ctx, photoArea, false);
   }
 
   // Photo Frame Yellow Border
@@ -376,10 +372,10 @@ export function renderFormatB(
   // 4. Devanagari "गोवा" Hot Pink Sticker Badge Overlay
   drawGoaDevanagariSticker(ctx, CANVAS_SIZE / 2 - 190, photoY + photoSize - 55, 380, 120);
 
-  // 5. User Details Section (Bold & Evenly Distributed across the card)
+  // 5. User Details Section
   let currentY = photoY + photoSize + 155;
 
-  // Name in Large Bold Serif Font (105px)
+  // Name in Large Bold Serif Font
   ctx.save();
   const displayName = details.name.trim() || 'Ada Lovelace';
   ctx.fillStyle = '#FFFFFF';
@@ -412,7 +408,7 @@ export function renderFormatB(
 
   currentY += 85;
 
-  // 6. Cool Lower Section: QR Code & Security Stamp (Eliminates bottom empty space!)
+  // 6. QR Code & Security Stamp
   const qrSize = 140;
   const qrX = CANVAS_SIZE / 2 - 270;
   const qrY = currentY;
