@@ -132,7 +132,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
 
   return (
     <div className="w-full flex flex-col items-center gap-5">
-      {/* Canvas Container Box (Screenshot 1 Live Preview Box) */}
+      {/* Canvas Container Box (Fits Canvas Smoothly) */}
       <div
         ref={containerRef}
         onMouseDown={handleMouseDown}
@@ -142,18 +142,18 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleMouseUp}
-        className={`relative w-full max-w-[480px] aspect-square rounded-xl p-2 bg-[#121212] border border-[#FFECA8]/20 shadow-2xl overflow-hidden select-none ${
+        className={`relative w-full max-w-[500px] aspect-square rounded-2xl p-1 bg-[#006B3E] border-2 border-[#FFECA8]/40 shadow-2xl overflow-hidden select-none ${
           image ? 'cursor-grab active:cursor-grabbing' : ''
         }`}
       >
         <canvas
           ref={canvasRef}
-          className="w-full h-full object-contain rounded-lg bg-[#006B3E]"
+          className="w-full h-full object-fill rounded-xl bg-[#006B3E]"
         />
       </div>
 
-      {/* Action Buttons & Tweet Text Note matching Screenshot 1 */}
-      <div className="w-full max-w-[480px] space-y-3">
+      {/* Action Buttons & Tweet Text Note */}
+      <div className="w-full max-w-[500px] space-y-3">
         {/* DOWNLOAD PNG Button */}
         <button
           type="button"
@@ -181,7 +181,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
 
         {copied && (
           <div className="text-center pt-1">
-            <span className="inline-flex items-center gap-1 text-xs text-[#FFECA8] bg-[#005833] font-bold px-3.5 py-1 rounded-full border border-[#FFECA8]/40 shadow">
+            <span className="inline-flex items-center gap-1 text-xs text-black bg-[#FFECA8] font-bold px-3.5 py-1 rounded-full shadow">
               <Check className="w-3.5 h-3.5" />
               Image copied to clipboard for easy pasting into X!
             </span>

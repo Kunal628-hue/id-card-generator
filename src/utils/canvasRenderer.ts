@@ -32,7 +32,7 @@ function drawGridPixelLogo(ctx: CanvasRenderingContext2D, x: number, y: number, 
   const grid = 3;
   const cellSize = size / grid;
 
-  // Pattern matching yellow grid logo from screenshot 3
+  // Pattern matching yellow grid logo
   ctx.fillRect(x + cellSize, y, cellSize, cellSize);
   ctx.fillRect(x, y + cellSize, cellSize, cellSize);
   ctx.fillRect(x + cellSize * 2, y + cellSize * 2, cellSize, cellSize);
@@ -56,7 +56,7 @@ function drawTransformedImage(
     const radius = Math.min(cropArea.width, cropArea.height) / 2;
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
   } else {
-    drawRoundedRect(ctx, cropArea.x, cropArea.y, cropArea.width, cropArea.height, 44);
+    drawRoundedRect(ctx, cropArea.x, cropArea.y, cropArea.width, cropArea.height, 48);
   }
   ctx.clip();
 
@@ -110,7 +110,7 @@ function drawGoaDevanagariSticker(
 }
 
 /**
- * Render Format A: Profile Frame (Exact Spec from Screenshot 2)
+ * Render Format A: Profile Frame
  */
 export function renderFormatA(
   canvas: HTMLCanvasElement,
@@ -161,10 +161,10 @@ export function renderFormatA(
     ctx.restore();
   }
 
-  // Concentric Rings: Outer Thick Yellow (#FFEB00) + Inner Thin Pink (#FF007A)
+  // Concentric Rings
   ctx.save();
 
-  // Outer Yellow Ring
+  // Outer Thick Yellow Ring
   ctx.lineWidth = 32;
   ctx.strokeStyle = '#FFEB00';
   ctx.beginPath();
@@ -180,10 +180,10 @@ export function renderFormatA(
 
   ctx.restore();
 
-  // 4. Top Devanagari "गोवा" Sticker Badge (Centered at top edge of circle ring)
+  // 4. Top Devanagari "गोवा" Sticker Badge
   drawGoaDevanagariSticker(ctx, CANVAS_SIZE / 2 - 150, cropArea.y - 45, 300, 90, '#FFEB00');
 
-  // 5. Bottom Branded Badge Pill (Centered below circle ring)
+  // 5. Bottom Branded Badge Pill
   ctx.save();
   const pillW = 480;
   const pillH = 160;
@@ -206,7 +206,7 @@ export function renderFormatA(
 }
 
 /**
- * Render Format B: Builder Badge (Exact Spec from Screenshot 3)
+ * Render Format B: Builder Badge (Full-Canvas High-Impact Layout)
  */
 export function renderFormatB(
   canvas: HTMLCanvasElement,
@@ -229,30 +229,30 @@ export function renderFormatB(
   ctx.save();
   ctx.strokeStyle = '#FFEB00';
   ctx.lineWidth = 6;
-  drawRoundedRect(ctx, 60, 60, CANVAS_SIZE - 120, CANVAS_SIZE - 120, 60);
+  drawRoundedRect(ctx, 50, 50, CANVAS_SIZE - 100, CANVAS_SIZE - 100, 56);
   ctx.stroke();
   ctx.restore();
 
   // 3. Top Right Devanagari "गोवा" Hot Pink Sticker Badge
-  drawGoaDevanagariSticker(ctx, CANVAS_SIZE - 320, 100, 220, 80, '#FFFFFF');
+  drawGoaDevanagariSticker(ctx, CANVAS_SIZE - 330, 90, 230, 85, '#FFFFFF');
 
   // 4. Header: HACKER HOUSE & Subtitle
   ctx.save();
   ctx.fillStyle = '#FFEB00';
-  ctx.font = '900 120px "Playfair Display", serif';
+  ctx.font = '900 135px "Playfair Display", serif';
   ctx.textAlign = 'center';
-  ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 240);
+  ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 230);
 
   ctx.fillStyle = '#FFEB00';
-  ctx.font = '700 28px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '700 32px "Plus Jakarta Sans", sans-serif';
   ctx.letterSpacing = '6px';
-  ctx.fillText('OFFICIAL BUILDER PASS  ·  GOA 2026', CANVAS_SIZE / 2, 300);
+  ctx.fillText('OFFICIAL BUILDER PASS  ·  GOA 2026', CANVAS_SIZE / 2, 295);
   ctx.restore();
 
-  // 5. Center Photo Area (Square Frame with Yellow Border)
-  const photoSize = 740;
+  // 5. Center Photo Area (Large 860x860 px Photo Frame)
+  const photoSize = 860;
   const photoX = (CANVAS_SIZE - photoSize) / 2;
-  const photoY = 420;
+  const photoY = 350;
 
   const photoArea = {
     x: photoX,
@@ -265,12 +265,12 @@ export function renderFormatB(
     drawTransformedImage(ctx, img, photoArea, transform, false);
   } else {
     ctx.save();
-    drawRoundedRect(ctx, photoX, photoY, photoSize, photoSize, 44);
+    drawRoundedRect(ctx, photoX, photoY, photoSize, photoSize, 48);
     ctx.fillStyle = '#005833';
     ctx.fill();
 
     ctx.fillStyle = '#00854A';
-    ctx.font = '700 36px "Plus Jakarta Sans", sans-serif';
+    ctx.font = '700 42px "Plus Jakarta Sans", sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('PHOTO AREA', photoX + photoSize / 2, photoY + photoSize / 2);
     ctx.restore();
@@ -278,64 +278,66 @@ export function renderFormatB(
 
   // Photo Frame Thick Yellow Border
   ctx.save();
-  ctx.lineWidth = 12;
+  ctx.lineWidth = 14;
   ctx.strokeStyle = '#FFEB00';
-  drawRoundedRect(ctx, photoX, photoY, photoSize, photoSize, 44);
+  drawRoundedRect(ctx, photoX, photoY, photoSize, photoSize, 48);
   ctx.stroke();
   ctx.restore();
 
-  // 6. Name in Large Bold Yellow Serif Font (Matching Screenshot 3)
-  let currentY = photoY + photoSize + 160;
+  // 6. Name in Extra Large Bold Yellow Serif Font (125px)
+  let currentY = photoY + photoSize + 150;
   ctx.save();
   const displayName = (details.name.trim() || 'SATOSHI NAKAMOTO').toUpperCase();
   ctx.fillStyle = '#FFEB00';
-  ctx.font = '900 115px "Playfair Display", serif';
+  ctx.font = '900 125px "Playfair Display", serif';
   ctx.textAlign = 'center';
   ctx.fillText(displayName, CANVAS_SIZE / 2, currentY);
 
-  currentY += 80;
+  currentY += 85;
 
-  // 7. Role / Title Hot Pink Banner
+  // 7. Role / Title Hot Pink Banner (Spans 1650px wide x 110px high across card!)
   const roleText = (details.role.trim() || 'FULLSTACK WEB3').toUpperCase();
   const titleText = (details.title.trim() || 'PROTOCOL ENGINEER').toUpperCase();
   const fullTagText = `${roleText} · ${titleText}`;
 
+  const roleW = 1650;
+  const roleH = 110;
+  const roleX = (CANVAS_SIZE - roleW) / 2;
+
   ctx.fillStyle = '#FF007A';
-  const tagW = Math.max(700, ctx.measureText(fullTagText).width + 120);
-  const tagX = (CANVAS_SIZE - tagW) / 2;
-  drawRoundedRect(ctx, tagX, currentY - 45, tagW, 85, 42.5);
+  drawRoundedRect(ctx, roleX, currentY, roleW, roleH, 55);
   ctx.fill();
 
   ctx.fillStyle = '#FFEB00';
-  ctx.font = '800 34px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '800 40px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText(fullTagText, CANVAS_SIZE / 2, currentY + 10);
+  ctx.fillText(fullTagText, CANVAS_SIZE / 2, currentY + 70);
 
   ctx.restore();
 
   // 8. Footer Section (Line Rule, Grid Logo, Handle, Event Dates)
   ctx.save();
   ctx.strokeStyle = 'rgba(255, 235, 0, 0.4)';
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(140, CANVAS_SIZE - 230);
-  ctx.lineTo(CANVAS_SIZE - 140, CANVAS_SIZE - 230);
+  ctx.moveTo(100, CANVAS_SIZE - 180);
+  ctx.lineTo(CANVAS_SIZE - 100, CANVAS_SIZE - 180);
   ctx.stroke();
 
   // Bottom Left: Yellow Grid Logo Icon
-  drawGridPixelLogo(ctx, 140, CANVAS_SIZE - 170, 100);
+  drawGridPixelLogo(ctx, 100, CANVAS_SIZE - 140, 90);
 
   // Bottom Center: @HackerHouseGoa
   ctx.fillStyle = '#FFEB00';
-  ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '800 38px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('@HackerHouseGoa', CANVAS_SIZE / 2, CANVAS_SIZE - 105);
+  ctx.fillText('@HackerHouseGoa', CANVAS_SIZE / 2, CANVAS_SIZE - 80);
 
   // Bottom Right: GOA, INDIA · 28–31 OCT 2026
   ctx.fillStyle = 'rgba(255, 235, 0, 0.9)';
-  ctx.font = '700 28px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '700 30px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'right';
-  ctx.fillText('GOA, INDIA · 28–31 OCT 2026', CANVAS_SIZE - 140, CANVAS_SIZE - 110);
+  ctx.fillText('GOA, INDIA · 28–31 OCT 2026', CANVAS_SIZE - 100, CANVAS_SIZE - 80);
 
   ctx.restore();
 }
