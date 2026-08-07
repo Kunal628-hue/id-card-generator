@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #006B3E;
+    color: #FFFFFF;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  .font-hh-serif {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .font-hh-devanagari {
+    font-family: 'Rozha One', 'Noto Sans Devanagari', sans-serif;
+  }
+}
+
+/* Official HH Goa 2026 Design Tokens */
+.hh-card {
+  background-color: #005632;
+  border: 1px solid #00824A;
+  border-radius: 1.75rem;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
+}
+
+.hh-card-inner {
+  background-color: #004D2D;
+  border: 1px solid #00703C;
+  border-radius: 1.25rem;
+}
+
+.hh-input {
+  background-color: #004226;
+  border: 1px solid #007843;
+  color: #FFFFFF;
+  border-radius: 1rem;
+}
+
+.hh-input:focus {
+  border-color: #FFEB00;
+  outline: none;
+}
+
+.btn-yellow {
+  background-color: #FFEB00;
+  color: #004D2D;
+  border-radius: 9999px;
+  font-weight: 800;
+  transition: all 0.2s ease;
+}
+
+.btn-yellow:hover {
+  background-color: #FFF242;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -4px rgba(255, 235, 0, 0.4);
+}
+
+.btn-yellow:active {
+  transform: translateY(0px);
+}
+
+.btn-pink {
+  background-color: #FF007A;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  font-weight: 800;
+  transition: all 0.2s ease;
+}
+
+.btn-pink:hover {
+  background-color: #FF2690;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -4px rgba(255, 0, 122, 0.4);
+}
+
+.btn-pink:active {
+  transform: translateY(0px);
+}
+
+.btn-secondary-hh {
+  background-color: #00502E;
+  color: #FFFFFF;
+  border: 1px solid #007D48;
+  border-radius: 9999px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-hh:hover {
+  background-color: #006037;
+  border-color: #FFEB00;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #006B3E;
+}
+::-webkit-scrollbar-thumb {
+  background: #004D2D;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00703C;
+}
