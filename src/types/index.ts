@@ -1,5 +1,7 @@
 export type ActiveFormat = 'formatA' | 'formatB';
 
+export type PhotoShape = 'circle' | 'square' | 'hexagon' | 'squircle';
+
 export type BadgeType = 'Builder' | 'Hacker' | 'VIP' | 'Speaker' | 'Core Team';
 
 export interface UserDetails {
@@ -9,6 +11,7 @@ export interface UserDetails {
   handle: string;
   company: string;
   badgeType: BadgeType;
+  photoShape: PhotoShape;
 }
 
 export interface ImageTransform {
@@ -30,6 +33,7 @@ export interface PresetTheme {
   primaryYellow: string;
   accentPink: string;
   textColor: string;
+  headerTextColor: string;
 }
 
 export const PRESET_THEMES: PresetTheme[] = [
@@ -39,49 +43,54 @@ export const PRESET_THEMES: PresetTheme[] = [
     subtitle: 'Official Hacker House Goa 2026 Theme',
     bgColor: '#006B3E',
     cardBg: '#005632',
-    primaryYellow: '#FFEB00',
+    primaryYellow: '#FFECA8',
     accentPink: '#FF007A',
     textColor: '#FFFFFF',
+    headerTextColor: '#FFECA8',
   },
   {
-    id: 'hot-pink',
-    name: 'Neon Pink',
-    subtitle: 'High energy Goa party vibe',
-    bgColor: '#9E004F',
-    cardBg: '#7D003E',
-    primaryYellow: '#FFEB00',
-    accentPink: '#00FFCC',
-    textColor: '#FFFFFF',
-  },
-  {
-    id: 'midnight-ocean',
-    name: 'Midnight Ocean',
-    subtitle: 'Sleek dark ocean blue mode',
-    bgColor: '#0F172A',
-    cardBg: '#1E293B',
-    primaryYellow: '#38BDF8',
+    id: 'sunshine-gold',
+    name: 'Sunshine Gold',
+    subtitle: 'Vibrant Goa beach sunshine yellow',
+    bgColor: '#FFD700',
+    cardBg: '#E6C200',
+    primaryYellow: '#005632',
     accentPink: '#FF007A',
-    textColor: '#FFFFFF',
+    textColor: '#000000',
+    headerTextColor: '#005632',
   },
   {
-    id: 'sunset-cyberpunk',
-    name: 'Sunset Cyberpunk',
-    subtitle: 'Electric purple & orange theme',
-    bgColor: '#18002E',
-    cardBg: '#2A004D',
-    primaryYellow: '#FF6B00',
+    id: 'tropical-cream',
+    name: 'Tropical Cream',
+    subtitle: 'Clean light beach pastel theme',
+    bgColor: '#FFFDF0',
+    cardBg: '#F3EFE0',
+    primaryYellow: '#008553',
     accentPink: '#FF007A',
-    textColor: '#FFFFFF',
+    textColor: '#000000',
+    headerTextColor: '#006B3E',
   },
   {
-    id: 'gold-noir',
-    name: 'Gold & Noir',
-    subtitle: 'Luxury black & gold edition',
-    bgColor: '#111111',
-    cardBg: '#1F1F1F',
-    primaryYellow: '#FFD700',
-    accentPink: '#E2E8F0',
+    id: 'hot-pink-white',
+    name: 'Neon Pink & White',
+    subtitle: 'High energy bright pink edition',
+    bgColor: '#FF007A',
+    cardBg: '#D60067',
+    primaryYellow: '#FFECA8',
+    accentPink: '#00E676',
     textColor: '#FFFFFF',
+    headerTextColor: '#FFECA8',
+  },
+  {
+    id: 'electric-mint',
+    name: 'Electric Mint',
+    subtitle: 'Bright mint green edition',
+    bgColor: '#00E676',
+    cardBg: '#00C853',
+    primaryYellow: '#00381F',
+    accentPink: '#FF007A',
+    textColor: '#000000',
+    headerTextColor: '#00381F',
   },
 ];
 

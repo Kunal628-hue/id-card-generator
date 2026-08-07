@@ -1,4 +1,4 @@
-import type { UserDetails, ImageTransform, PresetTheme } from '../types';
+import type { UserDetails, ImageTransform, PresetTheme, PhotoShape } from '../types';
 
 export const CANVAS_SIZE = 2000;
 
@@ -18,6 +18,45 @@ function drawRoundedRect(
   ctx.arcTo(x, y + h, x, y, r);
   ctx.arcTo(x, y, x + w, y, r);
   ctx.closePath();
+}
+
+/**
+ * Draw polygon shape (Circle, Square, Squircle, Hexagon)
+ */
+function drawShapePath(
+  ctx: CanvasRenderingContext2D,
+  shape: PhotoShape,
+  cropArea: { x: number; y: number; width: number; height: number },
+  padding: number = 0
+) {
+  const x = cropArea.x - padding;
+  const y = cropArea.y - padding;
+  const w = cropArea.width + padding * 2;
+  const h = cropArea.height + padding * 2;
+  const cx = x + w / 2;
+  const cy = y + h / 2;
+
+  ctx.beginPath();
+
+  if (shape === 'circle') {
+    const radius = Math.min(w, h) / 2;
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  } else if (shape === 'squircle') {
+    drawRoundedRect(ctx, x, y, w, h, Math.min(w, h) * 0.35);
+  } else if (shape === 'hexagon') {
+    const r = Math.min(w, h) / 2;
+    for (let i = 0; i < 6; i++) {
+      const angle = (Math.PI / 3) * i - Math.PI / 6;
+      const px = cx + r * Math.cos(angle);
+      const py = cy + r * Math.sin(angle);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+  } else {
+    // Default rounded square
+    drawRoundedRect(ctx, x, y, w, h, 48);
+  }
 }
 
 /**
@@ -79,20 +118,12 @@ function drawTransformedImage(
   img: HTMLImageElement,
   cropArea: { x: number; y: number; width: number; height: number },
   transform: ImageTransform,
-  isCircle: boolean = false,
+  shape: PhotoShape = 'circle',
   fallbackBg: string = '#004D2D'
 ) {
   ctx.save();
   
-  ctx.beginPath();
-  if (isCircle) {
-    const cx = cropArea.x + cropArea.width / 2;
-    const cy = cropArea.y + cropArea.height / 2;
-    const radius = Math.min(cropArea.width, cropArea.height) / 2;
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-  } else {
-    drawRoundedRect(ctx, cropArea.x, cropArea.y, cropArea.width, cropArea.height, 48);
-  }
+  drawShapePath(ctx, shape, cropArea);
   ctx.clip();
 
   ctx.fillStyle = fallbackBg;
@@ -125,8 +156,8 @@ function drawGoaDevanagariSticker(
   width: number,
   height: number,
   badgeBg: string = '#FF007A',
-  strokeColor: string = '#FFEB00',
-  textColor: string = '#FFEB00'
+  strokeColor: string = '#FFECA8',
+  textColor: string = '#FFECA8'
 ) {
   ctx.save();
   
@@ -147,14 +178,14 @@ function drawGoaDevanagariSticker(
 }
 
 /**
- * Render Format A: Profile Frame (Dynamic Theme Support)
+ * Render Format A: Profile Frame (Dynamic Theme & Photo Shape Support)
  */
 export function renderFormatA(
   canvas: HTMLCanvasElement,
   img: HTMLImageElement | null,
   transform: ImageTransform,
   theme: PresetTheme,
-  _details: UserDetails
+  details: UserDetails
 ) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -162,19 +193,21 @@ export function renderFormatA(
   canvas.width = CANVAS_SIZE;
   canvas.height = CANVAS_SIZE;
 
+  const photoShape = details.photoShape || 'circle';
+
   // 1. Dynamic Canvas Background
   ctx.fillStyle = theme.bgColor;
   ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
   // 2. Top Title "HACKER HOUSE"
   ctx.save();
-  ctx.fillStyle = theme.primaryYellow;
+  ctx.fillStyle = theme.headerTextColor;
   ctx.font = '900 140px "Playfair Display", serif';
   ctx.textAlign = 'center';
   ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 280);
   ctx.restore();
 
-  // 3. Center Circular Frame & Concentric Rings
+  // 3. Center Photo Frame & Outer Ring Borders
   const photoSize = 1180;
   const cropArea = {
     x: (CANVAS_SIZE - photoSize) / 2,
@@ -183,36 +216,29 @@ export function renderFormatA(
     height: photoSize,
   };
 
-  const centerX = CANVAS_SIZE / 2;
-  const centerY = cropArea.y + photoSize / 2;
-  const radius = photoSize / 2;
-
   if (img) {
-    drawTransformedImage(ctx, img, cropArea, transform, true, theme.cardBg);
+    drawTransformedImage(ctx, img, cropArea, transform, photoShape, theme.cardBg);
   } else {
     ctx.save();
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    drawShapePath(ctx, photoShape, cropArea);
     ctx.fillStyle = theme.cardBg;
     ctx.fill();
     ctx.restore();
   }
 
-  // Concentric Rings
+  // Concentric Rings matching photo shape
   ctx.save();
 
   // Outer Ring (primaryYellow)
   ctx.lineWidth = 32;
   ctx.strokeStyle = theme.primaryYellow;
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius + 20, 0, Math.PI * 2);
+  drawShapePath(ctx, photoShape, cropArea, 20);
   ctx.stroke();
 
   // Inner Ring (accentPink)
   ctx.lineWidth = 14;
   ctx.strokeStyle = theme.accentPink;
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius + 45, 0, Math.PI * 2);
+  drawShapePath(ctx, photoShape, cropArea, 45);
   ctx.stroke();
 
   ctx.restore();
@@ -226,7 +252,7 @@ export function renderFormatA(
     90,
     theme.accentPink,
     theme.primaryYellow,
-    theme.primaryYellow
+    '#FFFFFF'
   );
 
   // 5. Bottom Branded Badge Pill
@@ -252,7 +278,7 @@ export function renderFormatA(
 }
 
 /**
- * Render Format B: Builder Badge (Dynamic Theme Support & Space Filled Layout)
+ * Render Format B: Builder Badge (Dynamic Theme & Photo Shape Support)
  */
 export function renderFormatB(
   canvas: HTMLCanvasElement,
@@ -266,6 +292,8 @@ export function renderFormatB(
 
   canvas.width = CANVAS_SIZE;
   canvas.height = CANVAS_SIZE;
+
+  const photoShape = details.photoShape || 'square';
 
   // 1. Dynamic Canvas Background
   ctx.fillStyle = theme.bgColor;
@@ -293,7 +321,7 @@ export function renderFormatB(
 
   // 4. Header: HACKER HOUSE & Subtitle
   ctx.save();
-  ctx.fillStyle = theme.primaryYellow;
+  ctx.fillStyle = theme.headerTextColor;
   ctx.font = '900 135px "Playfair Display", serif';
   ctx.textAlign = 'center';
   ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 210);
@@ -304,7 +332,7 @@ export function renderFormatB(
   ctx.fillText('OFFICIAL BUILDER PASS  ·  GOA 2026', CANVAS_SIZE / 2, 275);
   ctx.restore();
 
-  // 5. Center Photo Area (Large 900x900 px Photo Frame)
+  // 5. Center Photo Area
   const photoSize = 900;
   const photoX = (CANVAS_SIZE - photoSize) / 2;
   const photoY = 320;
@@ -317,10 +345,10 @@ export function renderFormatB(
   };
 
   if (img) {
-    drawTransformedImage(ctx, img, photoArea, transform, false, theme.cardBg);
+    drawTransformedImage(ctx, img, photoArea, transform, photoShape, theme.cardBg);
   } else {
     ctx.save();
-    drawRoundedRect(ctx, photoX, photoY, photoSize, photoSize, 48);
+    drawShapePath(ctx, photoShape, photoArea);
     ctx.fillStyle = theme.cardBg;
     ctx.fill();
 
@@ -335,7 +363,7 @@ export function renderFormatB(
   ctx.save();
   ctx.lineWidth = 14;
   ctx.strokeStyle = theme.primaryYellow;
-  drawRoundedRect(ctx, photoX, photoY, photoSize, photoSize, 48);
+  drawShapePath(ctx, photoShape, photoArea);
   ctx.stroke();
   ctx.restore();
 
@@ -367,7 +395,7 @@ export function renderFormatB(
   ctx.strokeStyle = theme.primaryYellow;
   ctx.stroke();
 
-  ctx.fillStyle = theme.primaryYellow;
+  ctx.fillStyle = '#FFFFFF';
   ctx.font = '800 46px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText(fullTagText, CANVAS_SIZE / 2, currentY + 82);
@@ -402,7 +430,7 @@ export function renderFormatB(
   ctx.textAlign = 'left';
   ctx.fillText('VERIFIED BUILDER PASS', bannerX + 410, bannerY + 70);
 
-  ctx.fillStyle = '#FFFFFF';
+  ctx.fillStyle = theme.textColor;
   ctx.font = '700 34px "Plus Jakarta Sans", sans-serif';
   ctx.fillText(`${handleText}  ·  GOA 2026`, bannerX + 410, bannerY + 122);
 
@@ -427,7 +455,7 @@ export function renderFormatB(
   ctx.fillText('#FrameInGoa', CANVAS_SIZE / 2, CANVAS_SIZE - 75);
 
   // Bottom Right: GOA, INDIA · 28–31 OCT 2026
-  ctx.fillStyle = 'rgba(255, 235, 0, 0.9)';
+  ctx.fillStyle = theme.textColor;
   ctx.font = '700 32px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'right';
   ctx.fillText('GOA, INDIA · 28–31 OCT 2026', CANVAS_SIZE - 100, CANVAS_SIZE - 75);

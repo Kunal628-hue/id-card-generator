@@ -21,7 +21,9 @@ export default function App() {
     company: 'HH Goa 2026',
     title: 'Protocol Engineer',
     badgeType: 'Builder',
+    photoShape: 'circle',
   });
+
 
   const [transform, setTransform] = useState<ImageTransform>({
     zoom: 1,
@@ -104,10 +106,13 @@ export default function App() {
                 <div className="mt-4">
                   <PhotoAdjuster
                     transform={transform}
+                    photoShape={details.photoShape || 'circle'}
                     onChangeTransform={setTransform}
+                    onChangePhotoShape={(shape) => setDetails({ ...details, photoShape: shape })}
                   />
                 </div>
               )}
+
 
               {/* Form Inputs */}
               <div className="border-t border-[#FFECA8]/20 pt-4">

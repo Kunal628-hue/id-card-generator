@@ -1,7 +1,7 @@
 import React from 'react';
-import type { UserDetails } from '../../types';
+import type { UserDetails, PhotoShape } from '../../types';
 import { BUILDER_TITLES } from '../../types';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Circle, Square, Hexagon, Shapes } from 'lucide-react';
 
 interface BadgeFormProps {
   details: UserDetails;
@@ -12,7 +12,7 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
   details,
   onChangeDetails,
 }) => {
-  const handleChange = (field: keyof UserDetails, value: string) => {
+  const handleChange = (field: keyof UserDetails, value: any) => {
     onChangeDetails({
       ...details,
       [field]: value,
@@ -28,8 +28,44 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
     });
   };
 
+  const shapesList: { id: PhotoShape; label: string; icon: React.ReactNode }[] = [
+    { id: 'circle', label: 'Circle', icon: <Circle className="w-3.5 h-3.5" /> },
+    { id: 'square', label: 'Square', icon: <Square className="w-3.5 h-3.5" /> },
+    { id: 'squircle', label: 'Squircle', icon: <Shapes className="w-3.5 h-3.5" /> },
+    { id: 'hexagon', label: 'Hexagon', icon: <Hexagon className="w-3.5 h-3.5" /> },
+  ];
+
   return (
     <div className="space-y-4 pt-2">
+      
+      {/* Photo Frame Shape Choice */}
+      <div>
+        <label className="block font-hh-display text-base tracking-wider text-[#FFECA8] mb-1.5 uppercase flex items-center gap-1.5">
+          <Shapes className="w-4 h-4 text-[#FF007A]" />
+          PHOTO FRAME SHAPE
+        </label>
+        <div className="grid grid-cols-4 gap-2">
+          {shapesList.map((item) => {
+            const isSelected = (details.photoShape || 'circle') === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => handleChange('photoShape', item.id)}
+                className={`flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#FFECA8] text-black shadow-md border border-[#FFECA8]'
+                    : 'bg-[#004D2D] text-white hover:bg-[#005632] border border-[#FFECA8]/30'
+                }`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Full Name */}
       <div>
         <label className="block font-hh-display text-base tracking-wider text-[#FFECA8] mb-1.5 uppercase">

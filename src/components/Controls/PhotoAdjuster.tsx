@@ -1,15 +1,19 @@
 import React from 'react';
-import type { ImageTransform } from '../../types';
-import { ZoomIn, ZoomOut, RotateCw, RotateCcw, Sliders, Sun, Contrast, Move, Sparkles } from 'lucide-react';
+import type { ImageTransform, PhotoShape } from '../../types';
+import { ZoomIn, ZoomOut, RotateCw, RotateCcw, Sliders, Sun, Contrast, Move, Sparkles, Circle, Square, Hexagon, Shapes } from 'lucide-react';
 
 interface PhotoAdjusterProps {
   transform: ImageTransform;
+  photoShape: PhotoShape;
   onChangeTransform: (newTransform: ImageTransform) => void;
+  onChangePhotoShape: (shape: PhotoShape) => void;
 }
 
 export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
   transform,
+  photoShape,
   onChangeTransform,
+  onChangePhotoShape,
 }) => {
   const updateField = (field: keyof ImageTransform, value: number) => {
     onChangeTransform({
@@ -37,6 +41,13 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
     });
   };
 
+  const shapesList: { id: PhotoShape; label: string; icon: React.ReactNode }[] = [
+    { id: 'circle', label: 'Circle', icon: <Circle className="w-3.5 h-3.5" /> },
+    { id: 'square', label: 'Square', icon: <Square className="w-3.5 h-3.5" /> },
+    { id: 'squircle', label: 'Squircle', icon: <Shapes className="w-3.5 h-3.5" /> },
+    { id: 'hexagon', label: 'Hexagon', icon: <Hexagon className="w-3.5 h-3.5" /> },
+  ];
+
   return (
     <div className="bg-[#005632] border border-[#FFECA8]/40 p-4 md:p-5 rounded-xl space-y-4 shadow-md">
       
@@ -44,7 +55,7 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
       <div className="flex items-center justify-between border-b border-[#FFECA8]/20 pb-3">
         <span className="font-hh-display text-lg tracking-wider text-[#FFECA8] flex items-center gap-2 uppercase">
           <Sliders className="w-4 h-4 text-[#FF007A]" />
-          PHOTO FRAMING & IMAGE SETTINGS
+          PHOTO SHAPE & IMAGE SETTINGS
         </span>
         <button
           type="button"
@@ -54,6 +65,34 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
           <RotateCcw className="w-3.5 h-3.5" />
           Reset All
         </button>
+      </div>
+
+      {/* Photo Frame Shape Selector Row */}
+      <div className="space-y-1.5 border-b border-[#FFECA8]/20 pb-3">
+        <label className="text-xs text-white font-bold flex items-center gap-1.5">
+          <Shapes className="w-3.5 h-3.5 text-[#FF007A]" />
+          PHOTO FRAME SHAPE
+        </label>
+        <div className="grid grid-cols-4 gap-2">
+          {shapesList.map((item) => {
+            const isSelected = photoShape === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => onChangePhotoShape(item.id)}
+                className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#FFECA8] text-black shadow-md border border-[#FFECA8]'
+                    : 'bg-[#006B3E] text-white hover:bg-[#007D48] border border-[#FFECA8]/20'
+                }`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Grid of Image Controls */}
@@ -195,7 +234,7 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
 
       </div>
 
-      {/* Color Mode Toggle (Full Color vs Vintage B&W) */}
+      {/* Color Mode Toggle */}
       <div className="border-t border-[#FFECA8]/20 pt-3 flex items-center justify-between">
         <span className="text-xs text-white font-semibold flex items-center gap-1.5">
           <Sparkles className="w-3.5 h-3.5 text-[#FF007A]" />
