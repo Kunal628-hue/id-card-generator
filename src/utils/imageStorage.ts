@@ -40,10 +40,59 @@ export function createSampleAvatarImage(): Promise<HTMLImageElement> {
 }
 
 /**
+ * Uploads file to Vercel Blob Storage endpoint (/api/upload).
+ * Returns the public Vercel Blob URL on success, or null if API/token not ready.
+ */
+export async function uploadFileToVercelBlob(file: File): Promise<string | null> {
+  try {
+    const filename = `id-card-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    const response = await fetch(`/api/upload?filename=${encodeURIComponent(filename)}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': file.type || 'image/jpeg',
+      },
+      body: file,
+    });
+
+    if (!response.ok) {
+      console.warn('Vercel Blob upload HTTP status:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    if (data.success && data.url) {
+      console.log('Successfully uploaded photo to Vercel Blob Storage:', data.url);
+      saveBlobUrlToStorage(data.url);
+      return data.url;
+    }
+  } catch (err) {
+    console.warn('Vercel Blob upload failed (fallback to local storage):', err);
+  }
+  return null;
+}
+
+/**
+ * Save Vercel Blob URL to localStorage
+ */
+export function saveBlobUrlToStorage(url: string): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, url);
+  } catch (err) {
+    console.warn('Failed to save Vercel Blob URL to localStorage', err);
+  }
+}
+
+/**
  * Compresses and saves photo to localStorage
  */
 export function saveImageToStorage(img: HTMLImageElement): void {
   try {
+    // If image source is already a remote Vercel Blob URL, save URL directly
+    if (img.src.startsWith('http://') || img.src.startsWith('https://')) {
+      saveBlobUrlToStorage(img.src);
+      return;
+    }
+
     const canvas = document.createElement('canvas');
     const maxDim = 1000;
     let width = img.width;
@@ -73,7 +122,7 @@ export function saveImageToStorage(img: HTMLImageElement): void {
 }
 
 /**
- * Loads image from localStorage if available, or defaults to sample avatar
+ * Loads image from Vercel Blob Storage URL / localStorage if available, or defaults to sample avatar
  */
 export function loadSavedImage(): Promise<HTMLImageElement> {
   return new Promise((resolve) => {
@@ -81,6 +130,7 @@ export function loadSavedImage(): Promise<HTMLImageElement> {
       const savedDataUrl = localStorage.getItem(STORAGE_KEY);
       if (savedDataUrl) {
         const img = new Image();
+        img.crossOrigin = 'anonymous';
         img.onload = () => resolve(img);
         img.onerror = async () => {
           const sample = await createSampleAvatarImage();

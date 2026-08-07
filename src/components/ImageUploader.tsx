@@ -1,43 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { FileUp, RefreshCw, AlertCircle } from 'lucide-react';
+import { FileUp, RefreshCw, AlertCircle, CloudCheck } from 'lucide-react';
 import { loadImageFromFile } from '../utils/canvasRenderer';
+import { uploadFileToVercelBlob, createSampleAvatarImage } from '../utils/imageStorage';
 
 interface ImageUploaderProps {
   onImageLoaded: (img: HTMLImageElement) => void;
   hasImage: boolean;
-}
-
-function createSampleAvatarImage(): Promise<HTMLImageElement> {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 800;
-    canvas.height = 800;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.fillStyle = '#005833';
-      ctx.fillRect(0, 0, 800, 800);
-
-      ctx.fillStyle = '#FFECA8';
-      ctx.beginPath();
-      ctx.arc(400, 320, 140, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Glasses
-      ctx.fillStyle = '#006B3E';
-      ctx.fillRect(290, 290, 95, 55);
-      ctx.fillRect(415, 290, 95, 55);
-      ctx.fillRect(380, 310, 40, 15);
-
-      // Body
-      ctx.fillStyle = '#FFECA8';
-      ctx.beginPath();
-      ctx.ellipse(400, 720, 240, 220, 0, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.src = canvas.toDataURL('image/png');
-  });
 }
 
 export const ImageUploader: React.FC<ImageUploaderProps> = ({
@@ -47,19 +15,42 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [blobUploaded, setBlobUploaded] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleFileChange = async (file: File) => {
     if (!file) return;
     setLoading(true);
     setErrorMsg(null);
+    setBlobUploaded(false);
+
     try {
-      const loadedImg = await loadImageFromFile(file);
-      onImageLoaded(loadedImg);
+      // 1. Attempt Vercel Blob Cloud Storage upload
+      const blobUrl = await uploadFileToVercelBlob(file);
+
+      if (blobUrl) {
+        setBlobUploaded(true);
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          onImageLoaded(img);
+          setLoading(false);
+        };
+        img.onerror = async () => {
+          const fallbackImg = await loadImageFromFile(file);
+          onImageLoaded(fallbackImg);
+          setLoading(false);
+        };
+        img.src = blobUrl;
+      } else {
+        // Fallback to local image processing if Blob storage API is not reachable locally
+        const loadedImg = await loadImageFromFile(file);
+        onImageLoaded(loadedImg);
+        setLoading(false);
+      }
     } catch (err) {
       console.error(err);
       setErrorMsg('Failed to process image. Try a JPG, PNG, or HEIC photo.');
-    } finally {
       setLoading(false);
     }
   };
@@ -125,6 +116,12 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
             <p className="text-xs text-slate-200">
               JPG, PNG, HEIC supported.
             </p>
+            {blobUploaded && (
+              <p className="text-xs font-bold text-[#FFECA8] inline-flex items-center gap-1 pt-1">
+                <CloudCheck className="w-3.5 h-3.5" />
+                Uploaded to Vercel Blob Storage
+              </p>
+            )}
           </div>
         </div>
 
