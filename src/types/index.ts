@@ -32,11 +32,11 @@ export interface PresetTheme {
   textColor: string;
 }
 
-export const FORMAT_A_THEMES: PresetTheme[] = [
+export const PRESET_THEMES: PresetTheme[] = [
   {
-    id: 'hh-goa-official',
-    name: 'Official Emerald & Yellow',
-    subtitle: 'Official Hacker House Goa 2026 poster style',
+    id: 'official-emerald',
+    name: 'Official Emerald',
+    subtitle: 'Official Hacker House Goa 2026 Theme',
     bgColor: '#006B3E',
     cardBg: '#005632',
     primaryYellow: '#FFEB00',
@@ -44,29 +44,49 @@ export const FORMAT_A_THEMES: PresetTheme[] = [
     textColor: '#FFFFFF',
   },
   {
-    id: 'hh-goa-pink',
-    name: 'Neon Pink & Emerald',
-    subtitle: 'High contrast hot pink Goa vibe',
-    bgColor: '#006B3E',
-    cardBg: '#004D2D',
-    primaryYellow: '#FF007A',
-    accentPink: '#FFEB00',
-    textColor: '#FFFFFF',
-  }
-];
-
-export const FORMAT_B_THEMES: PresetTheme[] = [
-  {
-    id: 'hh-goa-badge-official',
-    name: 'Official Builder Pass',
-    subtitle: 'Emerald green & yellow edition badge',
-    bgColor: '#006B3E',
-    cardBg: '#005632',
+    id: 'hot-pink',
+    name: 'Neon Pink',
+    subtitle: 'High energy Goa party vibe',
+    bgColor: '#9E004F',
+    cardBg: '#7D003E',
     primaryYellow: '#FFEB00',
+    accentPink: '#00FFCC',
+    textColor: '#FFFFFF',
+  },
+  {
+    id: 'midnight-ocean',
+    name: 'Midnight Ocean',
+    subtitle: 'Sleek dark ocean blue mode',
+    bgColor: '#0F172A',
+    cardBg: '#1E293B',
+    primaryYellow: '#38BDF8',
     accentPink: '#FF007A',
     textColor: '#FFFFFF',
-  }
+  },
+  {
+    id: 'sunset-cyberpunk',
+    name: 'Sunset Cyberpunk',
+    subtitle: 'Electric purple & orange theme',
+    bgColor: '#18002E',
+    cardBg: '#2A004D',
+    primaryYellow: '#FF6B00',
+    accentPink: '#FF007A',
+    textColor: '#FFFFFF',
+  },
+  {
+    id: 'gold-noir',
+    name: 'Gold & Noir',
+    subtitle: 'Luxury black & gold edition',
+    bgColor: '#111111',
+    cardBg: '#1F1F1F',
+    primaryYellow: '#FFD700',
+    accentPink: '#E2E8F0',
+    textColor: '#FFFFFF',
+  },
 ];
+
+export const FORMAT_A_THEMES = PRESET_THEMES;
+export const FORMAT_B_THEMES = PRESET_THEMES;
 
 export const BUILDER_TITLES = [
   "Full-Stack Wanderer",

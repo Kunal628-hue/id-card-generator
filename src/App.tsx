@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import type { ActiveFormat, UserDetails, ImageTransform, PresetTheme } from './types';
-import { FORMAT_A_THEMES } from './types';
+import { PRESET_THEMES } from './types';
 import { Header } from './components/Header';
 import { FormatSelector } from './components/FormatSelector';
 import { ImageUploader } from './components/ImageUploader';
 import { PhotoAdjuster } from './components/Controls/PhotoAdjuster';
 import { BadgeForm } from './components/Controls/BadgeForm';
+import { ThemePicker } from './components/Controls/ThemePicker';
 import { CanvasPreview } from './components/CanvasPreview';
 
 export default function App() {
   const [activeFormat, setActiveFormat] = useState<ActiveFormat>('formatA');
   const [image, setImage] = useState<HTMLImageElement | null>(null);
-  const [theme] = useState<PresetTheme>(FORMAT_A_THEMES[0]);
+  const [theme, setTheme] = useState<PresetTheme>(PRESET_THEMES[0]);
 
   const [details, setDetails] = useState<UserDetails>({
     name: 'Satoshi Nakamoto',
@@ -45,13 +46,12 @@ export default function App() {
     });
   };
 
-
   return (
     <div className="min-h-screen bg-[#006B3E] text-white flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
-      {/* Top Navigation Header matching Screenshot 1 */}
+      {/* Top Navigation Header */}
       <Header />
 
-      {/* Main Page Layout matching Screenshot 1 */}
+      {/* Main Page Layout */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8 md:py-10 space-y-8">
         
         {/* Hero Header Section */}
@@ -85,13 +85,21 @@ export default function App() {
                 onChangeFormat={setActiveFormat}
               />
 
+              {/* Theme Picker Color Buttons */}
+              <div className="border-b border-[#FFECA8]/20 pb-5">
+                <ThemePicker
+                  currentTheme={theme}
+                  onSelectTheme={setTheme}
+                />
+              </div>
+
               {/* Dropzone Photo Uploader */}
               <ImageUploader
                 onImageLoaded={handleImageLoaded}
                 hasImage={!!image}
               />
 
-              {/* Photo Framing Adjuster if image exists */}
+              {/* Photo Framing & Setting Adjuster */}
               {image && (
                 <div className="mt-4">
                   <PhotoAdjuster
@@ -133,7 +141,7 @@ export default function App() {
         </div>
       </main>
 
-      {/* Footer matching Screenshot 1 */}
+      {/* Footer */}
       <footer className="bg-[#0B0B0B] py-6 px-4 border-t border-white/10 text-xs font-mono text-slate-300">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="font-hh-display text-2xl tracking-wider text-[#FFB3D9] uppercase">

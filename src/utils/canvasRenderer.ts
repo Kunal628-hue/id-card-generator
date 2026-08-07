@@ -21,18 +21,24 @@ function drawRoundedRect(
 }
 
 /**
- * Draw Grid Pixel Logo Icon (Bottom Left of Format B)
+ * Draw Grid Pixel Logo Icon
  */
-function drawGridPixelLogo(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
+function drawGridPixelLogo(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  yellowColor: string,
+  bgColor: string
+) {
   ctx.save();
-  ctx.fillStyle = '#FFEB00';
+  ctx.fillStyle = yellowColor;
   ctx.fillRect(x, y, size, size);
 
-  ctx.fillStyle = '#006B3E';
+  ctx.fillStyle = bgColor;
   const grid = 3;
   const cellSize = size / grid;
 
-  // Pattern matching yellow grid logo
   ctx.fillRect(x + cellSize, y, cellSize, cellSize);
   ctx.fillRect(x, y + cellSize, cellSize, cellSize);
   ctx.fillRect(x + cellSize * 2, y + cellSize * 2, cellSize, cellSize);
@@ -41,14 +47,22 @@ function drawGridPixelLogo(ctx: CanvasRenderingContext2D, x: number, y: number, 
 }
 
 /**
- * Draw Barcode graphic on canvas
+ * Draw Barcode graphic
  */
-function drawBarcodeGraphic(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
+function drawBarcodeGraphic(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  yellowColor: string,
+  bgColor: string
+) {
   ctx.save();
-  ctx.fillStyle = '#FFEB00';
+  ctx.fillStyle = yellowColor;
   ctx.fillRect(x, y, width, height);
 
-  ctx.fillStyle = '#004729';
+  ctx.fillStyle = bgColor;
   const barWidths = [4, 2, 8, 3, 6, 2, 9, 4, 3, 7, 2, 5, 8, 3, 4, 6, 2, 9, 3, 5, 7, 2, 4];
   let currX = x + 12;
   for (const bw of barWidths) {
@@ -65,7 +79,8 @@ function drawTransformedImage(
   img: HTMLImageElement,
   cropArea: { x: number; y: number; width: number; height: number },
   transform: ImageTransform,
-  isCircle: boolean = false
+  isCircle: boolean = false,
+  fallbackBg: string = '#004D2D'
 ) {
   ctx.save();
   
@@ -80,7 +95,7 @@ function drawTransformedImage(
   }
   ctx.clip();
 
-  ctx.fillStyle = '#004D2D';
+  ctx.fillStyle = fallbackBg;
   ctx.fill();
 
   ctx.filter = `brightness(${transform.brightness}%) contrast(${transform.contrast}%) saturate(${transform.saturation ?? 100}%)`;
@@ -109,16 +124,18 @@ function drawGoaDevanagariSticker(
   y: number,
   width: number,
   height: number,
+  badgeBg: string = '#FF007A',
+  strokeColor: string = '#FFEB00',
   textColor: string = '#FFEB00'
 ) {
   ctx.save();
   
-  ctx.fillStyle = '#FF007A';
+  ctx.fillStyle = badgeBg;
   drawRoundedRect(ctx, x, y, width, height, height / 2);
   ctx.fill();
   
   ctx.lineWidth = 4;
-  ctx.strokeStyle = '#FFEB00';
+  ctx.strokeStyle = strokeColor;
   ctx.stroke();
 
   ctx.fillStyle = textColor;
@@ -130,13 +147,13 @@ function drawGoaDevanagariSticker(
 }
 
 /**
- * Render Format A: Profile Frame
+ * Render Format A: Profile Frame (Dynamic Theme Support)
  */
 export function renderFormatA(
   canvas: HTMLCanvasElement,
   img: HTMLImageElement | null,
   transform: ImageTransform,
-  _theme: PresetTheme,
+  theme: PresetTheme,
   _details: UserDetails
 ) {
   const ctx = canvas.getContext('2d');
@@ -145,13 +162,13 @@ export function renderFormatA(
   canvas.width = CANVAS_SIZE;
   canvas.height = CANVAS_SIZE;
 
-  // 1. Emerald Green Background
-  ctx.fillStyle = '#006B3E';
+  // 1. Dynamic Canvas Background
+  ctx.fillStyle = theme.bgColor;
   ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
   // 2. Top Title "HACKER HOUSE"
   ctx.save();
-  ctx.fillStyle = '#FFEB00';
+  ctx.fillStyle = theme.primaryYellow;
   ctx.font = '900 140px "Playfair Display", serif';
   ctx.textAlign = 'center';
   ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 280);
@@ -171,12 +188,12 @@ export function renderFormatA(
   const radius = photoSize / 2;
 
   if (img) {
-    drawTransformedImage(ctx, img, cropArea, transform, true);
+    drawTransformedImage(ctx, img, cropArea, transform, true, theme.cardBg);
   } else {
     ctx.save();
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    ctx.fillStyle = '#005833';
+    ctx.fillStyle = theme.cardBg;
     ctx.fill();
     ctx.restore();
   }
@@ -184,16 +201,16 @@ export function renderFormatA(
   // Concentric Rings
   ctx.save();
 
-  // Outer Thick Yellow Ring
+  // Outer Ring (primaryYellow)
   ctx.lineWidth = 32;
-  ctx.strokeStyle = '#FFEB00';
+  ctx.strokeStyle = theme.primaryYellow;
   ctx.beginPath();
   ctx.arc(centerX, centerY, radius + 20, 0, Math.PI * 2);
   ctx.stroke();
 
-  // Inner Thin Pink Ring
+  // Inner Ring (accentPink)
   ctx.lineWidth = 14;
-  ctx.strokeStyle = '#FF007A';
+  ctx.strokeStyle = theme.accentPink;
   ctx.beginPath();
   ctx.arc(centerX, centerY, radius + 45, 0, Math.PI * 2);
   ctx.stroke();
@@ -201,7 +218,16 @@ export function renderFormatA(
   ctx.restore();
 
   // 4. Top Devanagari "गोवा" Sticker Badge
-  drawGoaDevanagariSticker(ctx, CANVAS_SIZE / 2 - 150, cropArea.y - 45, 300, 90, '#FFEB00');
+  drawGoaDevanagariSticker(
+    ctx,
+    CANVAS_SIZE / 2 - 150,
+    cropArea.y - 45,
+    300,
+    90,
+    theme.accentPink,
+    theme.primaryYellow,
+    theme.primaryYellow
+  );
 
   // 5. Bottom Branded Badge Pill
   ctx.save();
@@ -210,7 +236,7 @@ export function renderFormatA(
   const pillX = (CANVAS_SIZE - pillW) / 2;
   const pillY = cropArea.y + photoSize - 30;
 
-  ctx.fillStyle = '#FF007A';
+  ctx.fillStyle = theme.accentPink;
   drawRoundedRect(ctx, pillX, pillY, pillW, pillH, 80);
   ctx.fill();
 
@@ -226,13 +252,13 @@ export function renderFormatA(
 }
 
 /**
- * Render Format B: Builder Badge (Massive Typography & 100% Space-Filled Layout)
+ * Render Format B: Builder Badge (Dynamic Theme Support & Space Filled Layout)
  */
 export function renderFormatB(
   canvas: HTMLCanvasElement,
   img: HTMLImageElement | null,
   transform: ImageTransform,
-  _theme: PresetTheme,
+  theme: PresetTheme,
   details: UserDetails
 ) {
   const ctx = canvas.getContext('2d');
@@ -241,29 +267,38 @@ export function renderFormatB(
   canvas.width = CANVAS_SIZE;
   canvas.height = CANVAS_SIZE;
 
-  // 1. Emerald Green Background
-  ctx.fillStyle = '#006B3E';
+  // 1. Dynamic Canvas Background
+  ctx.fillStyle = theme.bgColor;
   ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-  // 2. Outer Border Frame (Yellow Line)
+  // 2. Outer Border Frame
   ctx.save();
-  ctx.strokeStyle = '#FFEB00';
+  ctx.strokeStyle = theme.primaryYellow;
   ctx.lineWidth = 6;
   drawRoundedRect(ctx, 50, 50, CANVAS_SIZE - 100, CANVAS_SIZE - 100, 56);
   ctx.stroke();
   ctx.restore();
 
-  // 3. Top Right Devanagari "गोवा" Hot Pink Sticker Badge
-  drawGoaDevanagariSticker(ctx, CANVAS_SIZE - 330, 80, 240, 90, '#FFFFFF');
+  // 3. Top Right Devanagari "गोवा" Sticker Badge
+  drawGoaDevanagariSticker(
+    ctx,
+    CANVAS_SIZE - 330,
+    80,
+    240,
+    90,
+    theme.accentPink,
+    theme.primaryYellow,
+    '#FFFFFF'
+  );
 
   // 4. Header: HACKER HOUSE & Subtitle
   ctx.save();
-  ctx.fillStyle = '#FFEB00';
+  ctx.fillStyle = theme.primaryYellow;
   ctx.font = '900 135px "Playfair Display", serif';
   ctx.textAlign = 'center';
   ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 210);
 
-  ctx.fillStyle = '#FFEB00';
+  ctx.fillStyle = theme.primaryYellow;
   ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
   ctx.letterSpacing = '6px';
   ctx.fillText('OFFICIAL BUILDER PASS  ·  GOA 2026', CANVAS_SIZE / 2, 275);
@@ -282,40 +317,40 @@ export function renderFormatB(
   };
 
   if (img) {
-    drawTransformedImage(ctx, img, photoArea, transform, false);
+    drawTransformedImage(ctx, img, photoArea, transform, false, theme.cardBg);
   } else {
     ctx.save();
     drawRoundedRect(ctx, photoX, photoY, photoSize, photoSize, 48);
-    ctx.fillStyle = '#005833';
+    ctx.fillStyle = theme.cardBg;
     ctx.fill();
 
-    ctx.fillStyle = '#00854A';
+    ctx.fillStyle = theme.primaryYellow;
     ctx.font = '700 44px "Plus Jakarta Sans", sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('PHOTO AREA', photoX + photoSize / 2, photoY + photoSize / 2);
     ctx.restore();
   }
 
-  // Photo Frame Thick Yellow Border
+  // Photo Frame Border
   ctx.save();
   ctx.lineWidth = 14;
-  ctx.strokeStyle = '#FFEB00';
+  ctx.strokeStyle = theme.primaryYellow;
   drawRoundedRect(ctx, photoX, photoY, photoSize, photoSize, 48);
   ctx.stroke();
   ctx.restore();
 
-  // 6. Name in Extra Large Bold Yellow Serif Font (130px)
+  // 6. Name in Extra Large Bold Serif Font (130px)
   let currentY = photoY + photoSize + 140;
   ctx.save();
   const displayName = (details.name.trim() || 'SATOSHI NAKAMOTO').toUpperCase();
-  ctx.fillStyle = '#FFEB00';
+  ctx.fillStyle = theme.primaryYellow;
   ctx.font = '900 130px "Playfair Display", serif';
   ctx.textAlign = 'center';
   ctx.fillText(displayName, CANVAS_SIZE / 2, currentY);
 
   currentY += 75;
 
-  // 7. Role / Title Hot Pink Banner (Spans 1720px wide x 130px high)
+  // 7. Role / Title Hot Pink Banner
   const roleText = (details.role.trim() || 'FULLSTACK WEB3').toUpperCase();
   const titleText = (details.title.trim() || 'PROTOCOL ENGINEER').toUpperCase();
   const fullTagText = `${roleText} · ${titleText}`;
@@ -324,45 +359,45 @@ export function renderFormatB(
   const roleH = 130;
   const roleX = (CANVAS_SIZE - roleW) / 2;
 
-  ctx.fillStyle = '#FF007A';
+  ctx.fillStyle = theme.accentPink;
   drawRoundedRect(ctx, roleX, currentY, roleW, roleH, 65);
   ctx.fill();
 
   ctx.lineWidth = 4;
-  ctx.strokeStyle = '#FFEB00';
+  ctx.strokeStyle = theme.primaryYellow;
   ctx.stroke();
 
-  ctx.fillStyle = '#FFEB00';
+  ctx.fillStyle = theme.primaryYellow;
   ctx.font = '800 46px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText(fullTagText, CANVAS_SIZE / 2, currentY + 82);
 
   currentY += 180;
 
-  // 8. Secondary ID Pass Banner & Barcode Strip (Fills lower empty space completely!)
+  // 8. Secondary ID Pass Banner & Barcode Strip (100% Space Filled)
   const bannerW = 1720;
   const bannerH = 170;
   const bannerX = (CANVAS_SIZE - bannerW) / 2;
   const bannerY = currentY;
 
   ctx.save();
-  ctx.fillStyle = '#004D2D';
+  ctx.fillStyle = theme.cardBg;
   drawRoundedRect(ctx, bannerX, bannerY, bannerW, bannerH, 28);
   ctx.fill();
 
   ctx.lineWidth = 3;
-  ctx.strokeStyle = '#FFEB00';
+  ctx.strokeStyle = theme.primaryYellow;
   ctx.stroke();
 
   // Barcode Graphic on Left
-  drawBarcodeGraphic(ctx, bannerX + 35, bannerY + 25, 340, 120);
+  drawBarcodeGraphic(ctx, bannerX + 35, bannerY + 25, 340, 120, theme.primaryYellow, theme.bgColor);
 
   // Center & Right text inside banner
   const handleText = details.handle.trim()
     ? (details.handle.startsWith('@') ? details.handle : `@${details.handle}`)
     : '@HackerHouseGoa';
 
-  ctx.fillStyle = '#FFEB00';
+  ctx.fillStyle = theme.primaryYellow;
   ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'left';
   ctx.fillText('VERIFIED BUILDER PASS', bannerX + 410, bannerY + 70);
@@ -373,7 +408,7 @@ export function renderFormatB(
 
   ctx.restore();
 
-  // 9. Footer Section (Line Rule, Grid Logo, Event Metadata)
+  // 9. Footer Section
   ctx.save();
   ctx.strokeStyle = 'rgba(255, 235, 0, 0.4)';
   ctx.lineWidth = 3;
@@ -383,10 +418,10 @@ export function renderFormatB(
   ctx.stroke();
 
   // Bottom Left: Yellow Grid Logo Icon
-  drawGridPixelLogo(ctx, 100, CANVAS_SIZE - 130, 85);
+  drawGridPixelLogo(ctx, 100, CANVAS_SIZE - 130, 85, theme.primaryYellow, theme.bgColor);
 
   // Bottom Center: #FrameInGoa
-  ctx.fillStyle = '#FFEB00';
+  ctx.fillStyle = theme.primaryYellow;
   ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('#FrameInGoa', CANVAS_SIZE / 2, CANVAS_SIZE - 75);

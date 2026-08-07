@@ -1,53 +1,69 @@
 import React from 'react';
-import type { ActiveFormat, PresetTheme } from '../../types';
-import { FORMAT_A_THEMES, FORMAT_B_THEMES } from '../../types';
+import type { PresetTheme } from '../../types';
+import { PRESET_THEMES } from '../../types';
 import { Palette, Check } from 'lucide-react';
 
 interface ThemePickerProps {
-  activeFormat: ActiveFormat;
-  selectedThemeId: string;
+  currentTheme: PresetTheme;
   onSelectTheme: (theme: PresetTheme) => void;
 }
 
 export const ThemePicker: React.FC<ThemePickerProps> = ({
-  activeFormat,
-  selectedThemeId,
+  currentTheme,
   onSelectTheme,
 }) => {
-  const themes = activeFormat === 'formatA' ? FORMAT_A_THEMES : FORMAT_B_THEMES;
-
   return (
-    <div className="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800 space-y-2.5">
-      <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
-        <Palette className="w-3.5 h-3.5 text-zinc-400" />
-        Design Preset
-      </h3>
+    <div className="space-y-3 pt-2">
+      <label className="font-hh-display text-base tracking-wider text-[#FFECA8] uppercase flex items-center gap-1.5">
+        <Palette className="w-4 h-4 text-[#FF007A]" />
+        COLOR THEME & PALETTE
+      </label>
 
-      <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
-        {themes.map((theme) => {
-          const isSelected = selectedThemeId === theme.id;
+      {/* Grid of Theme Option Buttons */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+        {PRESET_THEMES.map((theme) => {
+          const isSelected = currentTheme.id === theme.id;
           return (
             <button
               key={theme.id}
               type="button"
               onClick={() => onSelectTheme(theme)}
-              className={`p-2.5 rounded-lg text-left border transition-all duration-150 flex flex-col justify-between ${
+              className={`relative flex flex-col items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-zinc-800 border-white text-white shadow-sm'
-                  : 'bg-zinc-950/60 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-white'
+                  ? 'border-[#FFECA8] bg-[#004D2D] ring-2 ring-[#FFECA8]/50 scale-[1.02] shadow-md'
+                  : 'border-[#FFECA8]/30 bg-[#005632]/80 hover:border-[#FFECA8]/70 hover:bg-[#005632]'
               }`}
             >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold">
-                  {theme.name}
-                </span>
-                {isSelected && (
-                  <Check className="w-3.5 h-3.5 text-white" />
-                )}
+              {/* Checkmark badge */}
+              {isSelected && (
+                <div className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#FFECA8] text-black flex items-center justify-center">
+                  <Check className="w-2.5 h-2.5 stroke-[3]" />
+                </div>
+              )}
+
+              {/* Color Swatch Circles */}
+              <div className="flex items-center gap-1 my-1">
+                <div
+                  className="w-4 h-4 rounded-full border border-white/30 shadow-sm"
+                  style={{ backgroundColor: theme.bgColor }}
+                  title="Background"
+                />
+                <div
+                  className="w-4 h-4 rounded-full border border-white/30 shadow-sm"
+                  style={{ backgroundColor: theme.primaryYellow }}
+                  title="Primary Accent"
+                />
+                <div
+                  className="w-4 h-4 rounded-full border border-white/30 shadow-sm"
+                  style={{ backgroundColor: theme.accentPink }}
+                  title="Secondary Accent"
+                />
               </div>
-              <p className="text-[10px] text-zinc-400 mt-0.5 line-clamp-1">
-                {theme.subtitle}
-              </p>
+
+              {/* Theme Name */}
+              <span className={`text-xs font-bold truncate w-full text-center ${isSelected ? 'text-[#FFECA8]' : 'text-slate-200'}`}>
+                {theme.name}
+              </span>
             </button>
           );
         })}
