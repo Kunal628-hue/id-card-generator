@@ -32,7 +32,7 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
     <div className="space-y-4 pt-2">
       {/* Full Name */}
       <div>
-        <label className="block font-hh-display text-base tracking-wider text-white mb-1.5 uppercase">
+        <label className="block font-hh-display text-base tracking-wider text-[#FFECA8] mb-1.5 uppercase">
           FULL NAME
         </label>
         <input
@@ -40,13 +40,13 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
           placeholder="e.g. Satoshi Nakamoto"
           value={details.name}
           onChange={(e) => handleChange('name', e.target.value)}
-          className="mockup-input w-full py-3 px-4 text-sm text-black placeholder-slate-400"
+          className="mockup-input w-full py-3.5 px-4 text-sm font-semibold text-white placeholder-emerald-200/50"
         />
       </div>
 
       {/* Role / Stack */}
       <div>
-        <label className="block font-hh-display text-base tracking-wider text-white mb-1.5 uppercase">
+        <label className="block font-hh-display text-base tracking-wider text-[#FFECA8] mb-1.5 uppercase">
           ROLE / STACK
         </label>
         <input
@@ -54,23 +54,24 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
           placeholder="e.g. Fullstack Web3"
           value={details.role}
           onChange={(e) => handleChange('role', e.target.value)}
-          className="mockup-input w-full py-3 px-4 text-sm text-black placeholder-slate-400"
+          className="mockup-input w-full py-3.5 px-4 text-sm font-semibold text-white placeholder-emerald-200/50"
         />
       </div>
 
       {/* Builder Title */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="font-hh-display text-base tracking-wider text-white uppercase">
+          <label className="font-hh-display text-base tracking-wider text-[#FFECA8] uppercase">
             BUILDER TITLE
           </label>
           <button
             type="button"
             onClick={handleGenerateTitle}
             title="Randomize title"
-            className="text-white hover:text-[#FFECA8] transition-colors p-1 cursor-pointer"
+            className="text-[#FFECA8] hover:text-yellow-200 transition-colors p-1 cursor-pointer flex items-center gap-1 text-xs font-semibold"
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className="w-3.5 h-3.5 text-[#FF007A]" />
+            <span>Randomize</span>
           </button>
         </div>
         <input
@@ -78,7 +79,7 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
           placeholder="e.g. Protocol Engineer"
           value={details.title}
           onChange={(e) => handleChange('title', e.target.value)}
-          className="mockup-input w-full py-3 px-4 text-sm text-black placeholder-slate-400"
+          className="mockup-input w-full py-3.5 px-4 text-sm font-semibold text-[#FFECA8] placeholder-emerald-200/50"
         />
       </div>
     </div>
