@@ -29,6 +29,7 @@ export default function App() {
     rotation: 0,
     brightness: 100,
     contrast: 100,
+    saturation: 100,
   });
 
   const handleImageLoaded = (img: HTMLImageElement) => {
@@ -40,8 +41,10 @@ export default function App() {
       rotation: 0,
       brightness: 100,
       contrast: 100,
+      saturation: 100,
     });
   };
+
 
   return (
     <div className="min-h-screen bg-[#006B3E] text-white flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">

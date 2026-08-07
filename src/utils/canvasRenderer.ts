@@ -63,7 +63,7 @@ function drawTransformedImage(
   ctx.fillStyle = '#004D2D';
   ctx.fill();
 
-  ctx.filter = `brightness(${transform.brightness}%) contrast(${transform.contrast}%)`;
+  ctx.filter = `brightness(${transform.brightness}%) contrast(${transform.contrast}%) saturate(${transform.saturation ?? 100}%)`;
 
   const centerX = cropArea.x + cropArea.width / 2;
   const centerY = cropArea.y + cropArea.height / 2;

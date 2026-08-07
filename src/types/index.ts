@@ -18,6 +18,7 @@ export interface ImageTransform {
   rotation: number;
   brightness: number;
   contrast: number;
+  saturation: number;
 }
 
 export interface PresetTheme {
