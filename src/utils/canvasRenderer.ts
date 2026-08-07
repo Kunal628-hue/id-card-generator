@@ -14,14 +14,13 @@ function drawRoundedRect(
   ctx.moveTo(x + r, y);
   ctx.arcTo(x + w, y, x + w, y + h, r);
   ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
   ctx.arcTo(x, y + h, x, y, r);
   ctx.arcTo(x, y, x + w, y, r);
   ctx.closePath();
 }
 
 /**
- * Draw an ultra-clean, elegant vector camera & photo placeholder when no custom photo is loaded
+ * Draw an ultra-clean vector camera & photo placeholder when no custom photo is loaded
  */
 function drawVectorPlaceholder(
   ctx: CanvasRenderingContext2D,
@@ -36,7 +35,7 @@ function drawVectorPlaceholder(
     const radius = Math.min(cropArea.width, cropArea.height) / 2;
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
   } else {
-    drawRoundedRect(ctx, cropArea.x, cropArea.y, cropArea.width, cropArea.height, 48);
+    drawRoundedRect(ctx, cropArea.x, cropArea.y, cropArea.width, cropArea.height, 40);
   }
   ctx.clip();
 
@@ -70,7 +69,7 @@ function drawVectorPlaceholder(
   ctx.fillStyle = '#FF007A';
   ctx.fill();
 
-  // Elegant Prompt Text
+  // Prompt Text
   ctx.fillStyle = '#FFEB00';
   ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
@@ -80,7 +79,7 @@ function drawVectorPlaceholder(
 }
 
 /**
- * Draw QR Code / Barcode graphic on canvas
+ * Draw QR Code graphic on canvas
  */
 function drawQRCodeGraphic(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
   ctx.save();
@@ -90,18 +89,18 @@ function drawQRCodeGraphic(ctx: CanvasRenderingContext2D, x: number, y: number, 
 
   ctx.fillStyle = '#004729';
   const grid = 7;
-  const cellSize = (size - 24) / grid;
+  const cellSize = (size - 20) / grid;
   
   for (let i = 0; i < grid; i++) {
     for (let j = 0; j < grid; j++) {
       if ((i === 0 || i === grid - 1 || j === 0 || j === grid - 1 || (i % 2 === 0 && j % 2 === 1)) && !(i > 1 && i < 5 && j > 1 && j < 5)) {
-        ctx.fillRect(x + 12 + i * cellSize, y + 12 + j * cellSize, cellSize - 1.5, cellSize - 1.5);
+        ctx.fillRect(x + 10 + i * cellSize, y + 10 + j * cellSize, cellSize - 1.5, cellSize - 1.5);
       }
     }
   }
   
   ctx.fillStyle = '#FF007A';
-  ctx.fillRect(x + size / 2 - 10, y + size / 2 - 10, 20, 20);
+  ctx.fillRect(x + size / 2 - 8, y + size / 2 - 8, 16, 16);
   ctx.restore();
 }
 
@@ -121,7 +120,7 @@ function drawTransformedImage(
     const radius = Math.min(cropArea.width, cropArea.height) / 2;
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
   } else {
-    drawRoundedRect(ctx, cropArea.x, cropArea.y, cropArea.width, cropArea.height, 48);
+    drawRoundedRect(ctx, cropArea.x, cropArea.y, cropArea.width, cropArea.height, 40);
   }
   ctx.clip();
 
@@ -300,7 +299,7 @@ export function renderFormatA(
 }
 
 /**
- * Render Format B: Builder Badge (Bold, Cool, & Perfectly Spaced Layout)
+ * Render Format B: Builder Badge (Clean, Wide Banners, Zero Clutter)
  */
 export function renderFormatB(
   canvas: HTMLCanvasElement,
@@ -335,18 +334,18 @@ export function renderFormatB(
   ctx.fillStyle = '#FFEB00';
   ctx.font = '900 115px "Playfair Display", serif';
   ctx.textAlign = 'center';
-  ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 185);
+  ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 175);
 
   ctx.fillStyle = '#FF007A';
-  ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '800 30px "Plus Jakarta Sans", sans-serif';
   ctx.letterSpacing = '4px';
-  ctx.fillText('OFFICIAL BUILDER PASS  •  GOA 2026', CANVAS_SIZE / 2, 245);
+  ctx.fillText('OFFICIAL BUILDER PASS  •  GOA 2026', CANVAS_SIZE / 2, 230);
   ctx.restore();
 
-  // 3. Photo Area
-  const photoSize = 780;
+  // 3. Photo Area (720px Photo Frame)
+  const photoSize = 720;
   const photoX = (CANVAS_SIZE - photoSize) / 2;
-  const photoY = 295;
+  const photoY = 270;
 
   const photoArea = {
     x: photoX,
@@ -373,32 +372,38 @@ export function renderFormatB(
   drawGoaDevanagariSticker(ctx, CANVAS_SIZE / 2 - 190, photoY + photoSize - 55, 380, 120);
 
   // 5. User Details Section
-  let currentY = photoY + photoSize + 155;
+  let currentY = photoY + photoSize + 145;
 
-  // Name in Large Bold Serif Font
+  // Name in Large Bold Serif Font (110px)
   ctx.save();
   const displayName = details.name.trim() || 'Ada Lovelace';
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = '900 105px "Playfair Display", serif';
+  ctx.font = '900 110px "Playfair Display", serif';
   ctx.textAlign = 'center';
   ctx.fillText(displayName, CANVAS_SIZE / 2, currentY);
 
-  currentY += 95;
+  currentY += 75;
 
-  // Role / Stack Tag (Hot Pink Pill)
+  // WIDE Hot Pink Role Banner (Increased width spanning 1500px across card!)
   const displayRole = details.role.trim() || 'Full-stack • React / Node';
-  ctx.fillStyle = '#FF007A';
-  const roleW = Math.max(560, ctx.measureText(displayRole.toUpperCase()).width + 120);
+  const roleW = 1500;
+  const roleH = 90;
   const roleX = (CANVAS_SIZE - roleW) / 2;
-  drawRoundedRect(ctx, roleX, currentY - 45, roleW, 76, 38);
+
+  ctx.fillStyle = '#FF007A';
+  drawRoundedRect(ctx, roleX, currentY, roleW, roleH, 45);
   ctx.fill();
 
-  ctx.fillStyle = '#FFFFFF';
-  ctx.font = '800 34px "Plus Jakarta Sans", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(displayRole.toUpperCase(), CANVAS_SIZE / 2, currentY + 6);
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = '#FFEB00';
+  ctx.stroke();
 
-  currentY += 105;
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = '800 38px "Plus Jakarta Sans", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(displayRole.toUpperCase(), CANVAS_SIZE / 2, currentY + 58);
+
+  currentY += 165;
 
   // Builder Title (Electric Yellow)
   const displayTitle = details.title.trim() || 'Full-Stack Wanderer';
@@ -406,41 +411,40 @@ export function renderFormatB(
   ctx.font = '800 48px "Plus Jakarta Sans", sans-serif';
   ctx.fillText(`— ${displayTitle.toUpperCase()} —`, CANVAS_SIZE / 2, currentY);
 
-  currentY += 85;
+  currentY += 95;
 
-  // 6. QR Code & Security Stamp
-  const qrSize = 140;
-  const qrX = CANVAS_SIZE / 2 - 270;
-  const qrY = currentY;
+  // 6. WIDE Verification & Handle Banner (Spans 1500px across bottom of card!)
+  const bannerW = 1500;
+  const bannerH = 160;
+  const bannerX = (CANVAS_SIZE - bannerW) / 2;
+  const bannerY = currentY;
 
-  drawQRCodeGraphic(ctx, qrX, qrY, qrSize);
-
-  // Security Stamp Box next to QR Code
   ctx.save();
-  const stampX = CANVAS_SIZE / 2 - 100;
-  const stampW = 380;
-  const stampH = qrSize;
-
   ctx.fillStyle = '#004729';
-  drawRoundedRect(ctx, stampX, qrY, stampW, stampH, 20);
+  drawRoundedRect(ctx, bannerX, bannerY, bannerW, bannerH, 28);
   ctx.fill();
 
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 4;
   ctx.strokeStyle = '#FFEB00';
   ctx.stroke();
 
-  ctx.fillStyle = '#FFEB00';
-  ctx.font = '800 28px "Plus Jakarta Sans", sans-serif';
-  ctx.textAlign = 'left';
-  ctx.fillText('VERIFIED BUILDER', stampX + 24, qrY + 55);
+  // QR Code on Left Side of Banner
+  const qrSize = 110;
+  drawQRCodeGraphic(ctx, bannerX + 30, bannerY + 25, qrSize);
 
+  // Text inside Wide Banner
   const handleText = details.handle.trim()
     ? (details.handle.startsWith('@') ? details.handle : `@${details.handle}`)
     : '@adalovelace';
 
+  ctx.fillStyle = '#FFEB00';
+  ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('VERIFIED BUILDER PASS', bannerX + 175, bannerY + 68);
+
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = '700 32px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText(handleText, stampX + 24, qrY + 105);
+  ctx.font = '700 36px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText(`${handleText}  •  GOA 2026`, bannerX + 175, bannerY + 118);
 
   ctx.restore();
 
@@ -449,18 +453,18 @@ export function renderFormatB(
   ctx.strokeStyle = '#FFEB00';
   ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.moveTo(100, CANVAS_SIZE - 100);
-  ctx.lineTo(CANVAS_SIZE - 100, CANVAS_SIZE - 100);
+  ctx.moveTo(100, CANVAS_SIZE - 95);
+  ctx.lineTo(CANVAS_SIZE - 100, CANVAS_SIZE - 95);
   ctx.stroke();
 
   ctx.fillStyle = '#FFFFFF';
   ctx.font = '700 28px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('GOA, INDIA  •  28-31 OCT 2026', 100, CANVAS_SIZE - 50);
+  ctx.fillText('GOA, INDIA  •  28-31 OCT 2026', 100, CANVAS_SIZE - 45);
 
   ctx.textAlign = 'right';
   ctx.fillStyle = '#FFEB00';
-  ctx.fillText('#FrameInGoa', CANVAS_SIZE - 100, CANVAS_SIZE - 50);
+  ctx.fillText('#FrameInGoa', CANVAS_SIZE - 100, CANVAS_SIZE - 45);
   ctx.restore();
 }
 
