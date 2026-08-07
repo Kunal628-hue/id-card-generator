@@ -1,7 +1,7 @@
 import React from 'react';
-import type { UserDetails, PhotoShape } from '../../types';
+import type { UserDetails, PhotoShape, BadgeType } from '../../types';
 import { BUILDER_TITLES } from '../../types';
-import { RefreshCw, Circle, Square, Hexagon, Shapes } from 'lucide-react';
+import { RefreshCw, Circle, Square, Hexagon, Shapes, QrCode, User, AtSign, Building2, ShieldCheck } from 'lucide-react';
 
 interface BadgeFormProps {
   details: UserDetails;
@@ -35,6 +35,9 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
     { id: 'hexagon', label: 'Hexagon', icon: <Hexagon className="w-3.5 h-3.5" /> },
   ];
 
+  const badgeTypes: BadgeType[] = ['Builder', 'Hacker', 'VIP', 'Speaker', 'Core Team'];
+  const showQrCode = details.showQrCode ?? true;
+
   return (
     <div className="space-y-4 pt-2">
       
@@ -66,9 +69,37 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
         </div>
       </div>
 
+      {/* Badge Type Selector */}
+      <div>
+        <label className="block font-hh-display text-base tracking-wider text-[#FFECA8] mb-1.5 uppercase flex items-center gap-1.5">
+          <ShieldCheck className="w-4 h-4 text-[#FF007A]" />
+          BADGE TYPE
+        </label>
+        <div className="flex flex-wrap gap-1.5">
+          {badgeTypes.map((type) => {
+            const isSelected = (details.badgeType || 'Builder') === type;
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => handleChange('badgeType', type)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#FF007A] text-white shadow-md'
+                    : 'bg-[#004D2D] text-slate-200 hover:bg-[#005632] border border-[#FFECA8]/20'
+                }`}
+              >
+                {type}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Full Name */}
       <div>
-        <label className="block font-hh-display text-base tracking-wider text-[#FFECA8] mb-1.5 uppercase">
+        <label className="block font-hh-display text-base tracking-wider text-[#FFECA8] mb-1.5 uppercase flex items-center gap-1.5">
+          <User className="w-4 h-4 text-[#FF007A]" />
           FULL NAME
         </label>
         <input
@@ -78,6 +109,37 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
           onChange={(e) => handleChange('name', e.target.value)}
           className="mockup-input w-full py-3.5 px-4 text-sm font-semibold text-white placeholder-emerald-200/50"
         />
+      </div>
+
+      {/* Social Handle & Company (2 Columns) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label className="block font-hh-display text-base tracking-wider text-[#FFECA8] mb-1.5 uppercase flex items-center gap-1.5">
+            <AtSign className="w-4 h-4 text-[#FF007A]" />
+            HANDLE
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. HackerHouseGoa"
+            value={details.handle}
+            onChange={(e) => handleChange('handle', e.target.value)}
+            className="mockup-input w-full py-3 px-3 text-sm font-semibold text-white placeholder-emerald-200/50"
+          />
+        </div>
+
+        <div>
+          <label className="block font-hh-display text-base tracking-wider text-[#FFECA8] mb-1.5 uppercase flex items-center gap-1.5">
+            <Building2 className="w-4 h-4 text-[#FF007A]" />
+            COMPANY / ORG
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. HH Goa 2026"
+            value={details.company}
+            onChange={(e) => handleChange('company', e.target.value)}
+            className="mockup-input w-full py-3 px-3 text-sm font-semibold text-white placeholder-emerald-200/50"
+          />
+        </div>
       </div>
 
       {/* Role / Stack */}
@@ -118,6 +180,39 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
           className="mockup-input w-full py-3.5 px-4 text-sm font-semibold text-[#FFECA8] placeholder-emerald-200/50"
         />
       </div>
+
+      {/* QR Code Section */}
+      <div className="border-t border-[#FFECA8]/20 pt-4">
+        <div className="flex items-center justify-between mb-2">
+          <label className="font-hh-display text-base tracking-wider text-[#FFECA8] uppercase flex items-center gap-1.5">
+            <QrCode className="w-4 h-4 text-[#FF007A]" />
+            QR CODE ON CARD
+          </label>
+
+          <button
+            type="button"
+            onClick={() => handleChange('showQrCode', !showQrCode)}
+            className={`px-3 py-1 rounded-full text-xs font-bold transition-colors cursor-pointer border ${
+              showQrCode
+                ? 'bg-[#FF007A] text-white border-[#FF007A]'
+                : 'bg-black/40 text-slate-300 border-white/20'
+            }`}
+          >
+            {showQrCode ? 'ENABLED' : 'DISABLED'}
+          </button>
+        </div>
+
+        {showQrCode && (
+          <input
+            type="text"
+            placeholder="e.g. https://x.com/HackerHouseGoa or your portfolio URL"
+            value={details.qrData ?? 'https://x.com/HackerHouseGoa'}
+            onChange={(e) => handleChange('qrData', e.target.value)}
+            className="mockup-input w-full py-3.5 px-4 text-sm font-semibold text-white placeholder-emerald-200/50"
+          />
+        )}
+      </div>
+
     </div>
   );
 };

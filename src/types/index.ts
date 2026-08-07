@@ -12,6 +12,8 @@ export interface UserDetails {
   company: string;
   badgeType: BadgeType;
   photoShape: PhotoShape;
+  showQrCode?: boolean;
+  qrData?: string;
 }
 
 export interface ImageTransform {

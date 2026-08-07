@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { ActiveFormat, UserDetails, ImageTransform, PresetTheme } from './types';
 import { PRESET_THEMES } from './types';
 import { Header } from './components/Header';
@@ -8,22 +8,28 @@ import { PhotoAdjuster } from './components/Controls/PhotoAdjuster';
 import { BadgeForm } from './components/Controls/BadgeForm';
 import { ThemePicker } from './components/Controls/ThemePicker';
 import { CanvasPreview } from './components/CanvasPreview';
+import { loadSavedImage, saveImageToStorage, loadSavedDetails, saveDetailsToStorage } from './utils/imageStorage';
+
+const DEFAULT_DETAILS: UserDetails = {
+  name: 'Satoshi Nakamoto',
+  role: 'Fullstack Web3',
+  handle: 'HackerHouseGoa',
+  company: 'HH Goa 2026',
+  title: 'Protocol Engineer',
+  badgeType: 'Builder',
+  photoShape: 'circle',
+  showQrCode: true,
+  qrData: 'https://x.com/HackerHouseGoa',
+};
 
 export default function App() {
   const [activeFormat, setActiveFormat] = useState<ActiveFormat>('formatA');
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [theme, setTheme] = useState<PresetTheme>(PRESET_THEMES[0]);
 
-  const [details, setDetails] = useState<UserDetails>({
-    name: 'Satoshi Nakamoto',
-    role: 'Fullstack Web3',
-    handle: 'HackerHouseGoa',
-    company: 'HH Goa 2026',
-    title: 'Protocol Engineer',
-    badgeType: 'Builder',
-    photoShape: 'circle',
-  });
-
+  const [details, setDetails] = useState<UserDetails>(() =>
+    loadSavedDetails(DEFAULT_DETAILS)
+  );
 
   const [transform, setTransform] = useState<ImageTransform>({
     zoom: 1,
@@ -35,8 +41,24 @@ export default function App() {
     saturation: 100,
   });
 
+  // Load saved photo on page refresh or initial mount
+  useEffect(() => {
+    loadSavedImage().then((loadedImg) => {
+      if (loadedImg) {
+        setImage(loadedImg);
+      }
+    });
+  }, []);
+
+  // Save form details on change
+  const handleDetailsChange = (newDetails: UserDetails) => {
+    setDetails(newDetails);
+    saveDetailsToStorage(newDetails);
+  };
+
   const handleImageLoaded = (img: HTMLImageElement) => {
     setImage(img);
+    saveImageToStorage(img);
     setTransform({
       zoom: 1,
       x: 0,
@@ -108,7 +130,7 @@ export default function App() {
                     transform={transform}
                     photoShape={details.photoShape || 'circle'}
                     onChangeTransform={setTransform}
-                    onChangePhotoShape={(shape) => setDetails({ ...details, photoShape: shape })}
+                    onChangePhotoShape={(shape) => handleDetailsChange({ ...details, photoShape: shape })}
                   />
                 </div>
               )}
@@ -118,7 +140,7 @@ export default function App() {
               <div className="border-t border-[#FFECA8]/20 pt-4">
                 <BadgeForm
                   details={details}
-                  onChangeDetails={setDetails}
+                  onChangeDetails={handleDetailsChange}
                 />
               </div>
             </div>
