@@ -40,6 +40,26 @@ function drawGridPixelLogo(ctx: CanvasRenderingContext2D, x: number, y: number, 
   ctx.restore();
 }
 
+/**
+ * Draw Barcode graphic on canvas
+ */
+function drawBarcodeGraphic(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
+  ctx.save();
+  ctx.fillStyle = '#FFEB00';
+  ctx.fillRect(x, y, width, height);
+
+  ctx.fillStyle = '#004729';
+  const barWidths = [4, 2, 8, 3, 6, 2, 9, 4, 3, 7, 2, 5, 8, 3, 4, 6, 2, 9, 3, 5, 7, 2, 4];
+  let currX = x + 12;
+  for (const bw of barWidths) {
+    if (currX + bw < x + width - 12) {
+      ctx.fillRect(currX, y + 10, bw, height - 20);
+    }
+    currX += bw + 6;
+  }
+  ctx.restore();
+}
+
 function drawTransformedImage(
   ctx: CanvasRenderingContext2D,
   img: HTMLImageElement,
@@ -102,9 +122,9 @@ function drawGoaDevanagariSticker(
   ctx.stroke();
 
   ctx.fillStyle = textColor;
-  ctx.font = '900 64px "Rozha One", "Noto Sans Devanagari", sans-serif';
+  ctx.font = '900 68px "Rozha One", "Noto Sans Devanagari", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('गोवा', x + width / 2, y + height / 2 + 20);
+  ctx.fillText('गोवा', x + width / 2, y + height / 2 + 22);
 
   ctx.restore();
 }
@@ -206,7 +226,7 @@ export function renderFormatA(
 }
 
 /**
- * Render Format B: Builder Badge (Full-Canvas High-Impact Layout)
+ * Render Format B: Builder Badge (Massive Typography & 100% Space-Filled Layout)
  */
 export function renderFormatB(
   canvas: HTMLCanvasElement,
@@ -225,7 +245,7 @@ export function renderFormatB(
   ctx.fillStyle = '#006B3E';
   ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-  // 2. Outer Border Frame (Thin Yellow Line with Rounded Corners)
+  // 2. Outer Border Frame (Yellow Line)
   ctx.save();
   ctx.strokeStyle = '#FFEB00';
   ctx.lineWidth = 6;
@@ -234,25 +254,25 @@ export function renderFormatB(
   ctx.restore();
 
   // 3. Top Right Devanagari "गोवा" Hot Pink Sticker Badge
-  drawGoaDevanagariSticker(ctx, CANVAS_SIZE - 330, 90, 230, 85, '#FFFFFF');
+  drawGoaDevanagariSticker(ctx, CANVAS_SIZE - 330, 80, 240, 90, '#FFFFFF');
 
   // 4. Header: HACKER HOUSE & Subtitle
   ctx.save();
   ctx.fillStyle = '#FFEB00';
   ctx.font = '900 135px "Playfair Display", serif';
   ctx.textAlign = 'center';
-  ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 230);
+  ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 210);
 
   ctx.fillStyle = '#FFEB00';
-  ctx.font = '700 32px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
   ctx.letterSpacing = '6px';
-  ctx.fillText('OFFICIAL BUILDER PASS  ·  GOA 2026', CANVAS_SIZE / 2, 295);
+  ctx.fillText('OFFICIAL BUILDER PASS  ·  GOA 2026', CANVAS_SIZE / 2, 275);
   ctx.restore();
 
-  // 5. Center Photo Area (Large 860x860 px Photo Frame)
-  const photoSize = 860;
+  // 5. Center Photo Area (Large 900x900 px Photo Frame)
+  const photoSize = 900;
   const photoX = (CANVAS_SIZE - photoSize) / 2;
-  const photoY = 350;
+  const photoY = 320;
 
   const photoArea = {
     x: photoX,
@@ -270,7 +290,7 @@ export function renderFormatB(
     ctx.fill();
 
     ctx.fillStyle = '#00854A';
-    ctx.font = '700 42px "Plus Jakarta Sans", sans-serif';
+    ctx.font = '700 44px "Plus Jakarta Sans", sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('PHOTO AREA', photoX + photoSize / 2, photoY + photoSize / 2);
     ctx.restore();
@@ -284,60 +304,98 @@ export function renderFormatB(
   ctx.stroke();
   ctx.restore();
 
-  // 6. Name in Extra Large Bold Yellow Serif Font (125px)
-  let currentY = photoY + photoSize + 150;
+  // 6. Name in Extra Large Bold Yellow Serif Font (130px)
+  let currentY = photoY + photoSize + 140;
   ctx.save();
   const displayName = (details.name.trim() || 'SATOSHI NAKAMOTO').toUpperCase();
   ctx.fillStyle = '#FFEB00';
-  ctx.font = '900 125px "Playfair Display", serif';
+  ctx.font = '900 130px "Playfair Display", serif';
   ctx.textAlign = 'center';
   ctx.fillText(displayName, CANVAS_SIZE / 2, currentY);
 
-  currentY += 85;
+  currentY += 75;
 
-  // 7. Role / Title Hot Pink Banner (Spans 1650px wide x 110px high across card!)
+  // 7. Role / Title Hot Pink Banner (Spans 1720px wide x 130px high)
   const roleText = (details.role.trim() || 'FULLSTACK WEB3').toUpperCase();
   const titleText = (details.title.trim() || 'PROTOCOL ENGINEER').toUpperCase();
   const fullTagText = `${roleText} · ${titleText}`;
 
-  const roleW = 1650;
-  const roleH = 110;
+  const roleW = 1720;
+  const roleH = 130;
   const roleX = (CANVAS_SIZE - roleW) / 2;
 
   ctx.fillStyle = '#FF007A';
-  drawRoundedRect(ctx, roleX, currentY, roleW, roleH, 55);
+  drawRoundedRect(ctx, roleX, currentY, roleW, roleH, 65);
   ctx.fill();
 
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = '#FFEB00';
+  ctx.stroke();
+
   ctx.fillStyle = '#FFEB00';
-  ctx.font = '800 40px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '800 46px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText(fullTagText, CANVAS_SIZE / 2, currentY + 70);
+  ctx.fillText(fullTagText, CANVAS_SIZE / 2, currentY + 82);
+
+  currentY += 180;
+
+  // 8. Secondary ID Pass Banner & Barcode Strip (Fills lower empty space completely!)
+  const bannerW = 1720;
+  const bannerH = 170;
+  const bannerX = (CANVAS_SIZE - bannerW) / 2;
+  const bannerY = currentY;
+
+  ctx.save();
+  ctx.fillStyle = '#004D2D';
+  drawRoundedRect(ctx, bannerX, bannerY, bannerW, bannerH, 28);
+  ctx.fill();
+
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = '#FFEB00';
+  ctx.stroke();
+
+  // Barcode Graphic on Left
+  drawBarcodeGraphic(ctx, bannerX + 35, bannerY + 25, 340, 120);
+
+  // Center & Right text inside banner
+  const handleText = details.handle.trim()
+    ? (details.handle.startsWith('@') ? details.handle : `@${details.handle}`)
+    : '@HackerHouseGoa';
+
+  ctx.fillStyle = '#FFEB00';
+  ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('VERIFIED BUILDER PASS', bannerX + 410, bannerY + 70);
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = '700 34px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText(`${handleText}  ·  GOA 2026`, bannerX + 410, bannerY + 122);
 
   ctx.restore();
 
-  // 8. Footer Section (Line Rule, Grid Logo, Handle, Event Dates)
+  // 9. Footer Section (Line Rule, Grid Logo, Event Metadata)
   ctx.save();
   ctx.strokeStyle = 'rgba(255, 235, 0, 0.4)';
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(100, CANVAS_SIZE - 180);
-  ctx.lineTo(CANVAS_SIZE - 100, CANVAS_SIZE - 180);
+  ctx.moveTo(100, CANVAS_SIZE - 160);
+  ctx.lineTo(CANVAS_SIZE - 100, CANVAS_SIZE - 160);
   ctx.stroke();
 
   // Bottom Left: Yellow Grid Logo Icon
-  drawGridPixelLogo(ctx, 100, CANVAS_SIZE - 140, 90);
+  drawGridPixelLogo(ctx, 100, CANVAS_SIZE - 130, 85);
 
-  // Bottom Center: @HackerHouseGoa
+  // Bottom Center: #FrameInGoa
   ctx.fillStyle = '#FFEB00';
-  ctx.font = '800 38px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('@HackerHouseGoa', CANVAS_SIZE / 2, CANVAS_SIZE - 80);
+  ctx.fillText('#FrameInGoa', CANVAS_SIZE / 2, CANVAS_SIZE - 75);
 
   // Bottom Right: GOA, INDIA · 28–31 OCT 2026
   ctx.fillStyle = 'rgba(255, 235, 0, 0.9)';
-  ctx.font = '700 30px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '700 32px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'right';
-  ctx.fillText('GOA, INDIA · 28–31 OCT 2026', CANVAS_SIZE - 100, CANVAS_SIZE - 80);
+  ctx.fillText('GOA, INDIA · 28–31 OCT 2026', CANVAS_SIZE - 100, CANVAS_SIZE - 75);
 
   ctx.restore();
 }
