@@ -2,6 +2,9 @@ import type { UserDetails, ImageTransform, PresetTheme, PhotoShape } from '../ty
 
 export const CANVAS_SIZE = 2000;
 
+/**
+ * Mathematically perfect rounded rectangle path without corner artifacts
+ */
 function drawRoundedRect(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -10,13 +13,17 @@ function drawRoundedRect(
   h: number,
   r: number
 ) {
+  const radius = Math.min(r, w / 2, h / 2);
   ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + w - radius, y);
+  ctx.arcTo(x + w, y, x + w, y + radius, radius);
+  ctx.lineTo(x + w, y + h - radius);
+  ctx.arcTo(x + w, y + h, x + w - radius, y + h, radius);
+  ctx.lineTo(x + radius, y + h);
+  ctx.arcTo(x, y + h, x, y + h - radius, radius);
+  ctx.lineTo(x, y + radius);
+  ctx.arcTo(x, y, x + radius, y, radius);
   ctx.closePath();
 }
 
@@ -42,7 +49,8 @@ function drawShapePath(
     const radius = Math.min(w, h) / 2;
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
   } else if (shape === 'squircle') {
-    drawRoundedRect(ctx, x, y, w, h, Math.min(w, h) * 0.35);
+    const radius = Math.min(w, h) * 0.35 + padding;
+    drawRoundedRect(ctx, x, y, w, h, radius);
   } else if (shape === 'hexagon') {
     const r = Math.min(w, h) / 2;
     for (let i = 0; i < 6; i++) {
@@ -55,7 +63,8 @@ function drawShapePath(
     ctx.closePath();
   } else {
     // Default rounded square
-    drawRoundedRect(ctx, x, y, w, h, 48);
+    const radius = 48 + padding;
+    drawRoundedRect(ctx, x, y, w, h, radius);
   }
 }
 
@@ -226,23 +235,22 @@ export function renderFormatA(
     ctx.restore();
   }
 
-  // Concentric Rings
+  // Concentric Rings (Smooth Pathing)
   ctx.save();
 
-  // Outer Ring (Wider bold line)
-  ctx.lineWidth = 46;
+  // Outer Ring
+  ctx.lineWidth = 44;
   ctx.strokeStyle = theme.primaryYellow;
-  drawShapePath(ctx, photoShape, cropArea, 28);
+  drawShapePath(ctx, photoShape, cropArea, 26);
   ctx.stroke();
 
-  // Inner Ring (Wider bold line)
-  ctx.lineWidth = 24;
+  // Inner Ring
+  ctx.lineWidth = 22;
   ctx.strokeStyle = theme.accentPink;
-  drawShapePath(ctx, photoShape, cropArea, 62);
+  drawShapePath(ctx, photoShape, cropArea, 58);
   ctx.stroke();
 
   ctx.restore();
-
 
   // 4. Top Devanagari "गोवा" Sticker Badge
   drawGoaDevanagariSticker(
@@ -360,14 +368,13 @@ export function renderFormatB(
     ctx.restore();
   }
 
-  // Photo Frame Border (Wider bold line)
+  // Photo Frame Border
   ctx.save();
   ctx.lineWidth = 22;
   ctx.strokeStyle = theme.primaryYellow;
   drawShapePath(ctx, photoShape, photoArea);
   ctx.stroke();
   ctx.restore();
-
 
   // 6. Name in Extra Large Bold Serif Font (130px)
   let currentY = photoY + photoSize + 140;
