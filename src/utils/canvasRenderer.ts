@@ -157,7 +157,7 @@ function drawGoaDevanagariSticker(
   height: number,
   badgeBg: string = '#FF007A',
   strokeColor: string = '#FFECA8',
-  textColor: string = '#FFECA8'
+  textColor: string = '#FFFFFF'
 ) {
   ctx.save();
   
@@ -178,7 +178,7 @@ function drawGoaDevanagariSticker(
 }
 
 /**
- * Render Format A: Profile Frame (Dynamic Theme & Photo Shape Support)
+ * Render Format A: Profile Frame
  */
 export function renderFormatA(
   canvas: HTMLCanvasElement,
@@ -195,7 +195,7 @@ export function renderFormatA(
 
   const photoShape = details.photoShape || 'circle';
 
-  // 1. Dynamic Canvas Background
+  // 1. Canvas Background
   ctx.fillStyle = theme.bgColor;
   ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
@@ -207,7 +207,7 @@ export function renderFormatA(
   ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 280);
   ctx.restore();
 
-  // 3. Center Photo Frame & Outer Ring Borders
+  // 3. Center Photo Frame
   const photoSize = 1180;
   const cropArea = {
     x: (CANVAS_SIZE - photoSize) / 2,
@@ -226,16 +226,16 @@ export function renderFormatA(
     ctx.restore();
   }
 
-  // Concentric Rings matching photo shape
+  // Concentric Rings
   ctx.save();
 
-  // Outer Ring (primaryYellow)
+  // Outer Ring
   ctx.lineWidth = 32;
   ctx.strokeStyle = theme.primaryYellow;
   drawShapePath(ctx, photoShape, cropArea, 20);
   ctx.stroke();
 
-  // Inner Ring (accentPink)
+  // Inner Ring
   ctx.lineWidth = 14;
   ctx.strokeStyle = theme.accentPink;
   drawShapePath(ctx, photoShape, cropArea, 45);
@@ -278,7 +278,7 @@ export function renderFormatA(
 }
 
 /**
- * Render Format B: Builder Badge (Dynamic Theme & Photo Shape Support)
+ * Render Format B: Builder Badge
  */
 export function renderFormatB(
   canvas: HTMLCanvasElement,
@@ -295,7 +295,7 @@ export function renderFormatB(
 
   const photoShape = details.photoShape || 'square';
 
-  // 1. Dynamic Canvas Background
+  // 1. Canvas Background
   ctx.fillStyle = theme.bgColor;
   ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
@@ -371,7 +371,7 @@ export function renderFormatB(
   let currentY = photoY + photoSize + 140;
   ctx.save();
   const displayName = (details.name.trim() || 'SATOSHI NAKAMOTO').toUpperCase();
-  ctx.fillStyle = theme.primaryYellow;
+  ctx.fillStyle = theme.headerTextColor;
   ctx.font = '900 130px "Playfair Display", serif';
   ctx.textAlign = 'center';
   ctx.fillText(displayName, CANVAS_SIZE / 2, currentY);
