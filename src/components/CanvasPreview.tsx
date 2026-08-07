@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { ActiveFormat, UserDetails, ImageTransform, PresetTheme } from '../types';
 import { renderFormatA, renderFormatB } from '../utils/canvasRenderer';
-import { Download, ArrowRight, Check, AlertCircle } from 'lucide-react';
+import { Download, ArrowRight, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface CanvasPreviewProps {
@@ -132,7 +132,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
 
   return (
     <div className="w-full flex flex-col items-center gap-4">
-      {/* Outer Card Frame Box */}
+      {/* Outer Canvas Box Container */}
       <div
         ref={containerRef}
         onMouseDown={handleMouseDown}
@@ -142,7 +142,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleMouseUp}
-        className={`relative w-full max-w-[500px] aspect-square rounded-[2rem] p-3 bg-[#005632] border border-[#00824A] shadow-2xl overflow-hidden select-none ${
+        className={`relative w-full max-w-[500px] aspect-square rounded-[2rem] p-2.5 bg-[#005632] border border-[#00824A] shadow-2xl overflow-hidden select-none ${
           image ? 'cursor-grab active:cursor-grabbing' : ''
         }`}
       >
@@ -152,22 +152,10 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
         />
 
         {image && (
-          <div className="absolute top-5 left-5 right-5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex justify-center">
-            <span className="bg-[#00381F]/90 text-[#FFEB00] text-xs font-semibold px-3.5 py-1 rounded-full shadow border border-[#00703C]">
+          <div className="absolute top-4 left-4 right-4 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex justify-center">
+            <span className="bg-[#00381F]/90 text-[#FFEB00] text-xs font-semibold px-3 py-1 rounded-full shadow border border-[#00703C]">
               Drag on photo to adjust position
             </span>
-          </div>
-        )}
-
-        {!image && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-6 text-center">
-            <div className="bg-[#004226]/95 border border-[#007843] p-5 rounded-2xl max-w-xs shadow-lg">
-              <AlertCircle className="w-7 h-7 text-[#FFEB00] mx-auto mb-2" />
-              <p className="text-sm font-bold text-white">Upload a photo</p>
-              <p className="text-xs text-[#A8E6CF] mt-0.5 font-medium">
-                Your graphic renders instantly in your browser!
-              </p>
-            </div>
           </div>
         )}
       </div>
@@ -179,8 +167,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
           <button
             type="button"
             onClick={handleDownload}
-            disabled={!image}
-            className="flex items-center justify-center gap-2 bg-[#FFEB00] hover:bg-[#FFF242] disabled:opacity-40 text-[#004D2D] font-extrabold text-sm md:text-base py-3.5 px-6 rounded-full shadow-lg shadow-yellow-500/10 transition-all active:scale-95 cursor-pointer"
+            className="flex items-center justify-center gap-2 bg-[#FFEB00] hover:bg-[#FFF242] text-[#004D2D] font-extrabold text-sm md:text-base py-3.5 px-6 rounded-full shadow-lg transition-all active:scale-95 cursor-pointer"
           >
             <Download className="w-4 h-4 stroke-[3]" />
             <span>Download</span>
@@ -190,8 +177,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
           <button
             type="button"
             onClick={handleShareToX}
-            disabled={!image}
-            className="flex items-center justify-center gap-2 bg-[#FF007A] hover:bg-[#FF2690] border border-[#FF4099] disabled:opacity-40 text-white font-extrabold text-sm md:text-base py-3.5 px-6 rounded-full shadow-lg shadow-pink-500/10 transition-all active:scale-95 cursor-pointer"
+            className="flex items-center justify-center gap-2 bg-[#FF007A] hover:bg-[#FF2690] text-white font-extrabold text-sm md:text-base py-3.5 px-6 rounded-full shadow-lg transition-all active:scale-95 cursor-pointer"
           >
             <ArrowRight className="w-4 h-4" />
             <span>Share to X</span>

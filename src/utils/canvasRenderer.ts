@@ -19,6 +19,63 @@ function drawRoundedRect(
   ctx.closePath();
 }
 
+/**
+ * Draw a clean developer avatar vector placeholder when no custom photo is uploaded yet
+ */
+function drawAvatarPlaceholder(
+  ctx: CanvasRenderingContext2D,
+  cropArea: { x: number; y: number; width: number; height: number },
+  isCircle: boolean = false
+) {
+  ctx.save();
+  ctx.beginPath();
+  if (isCircle) {
+    const cx = cropArea.x + cropArea.width / 2;
+    const cy = cropArea.y + cropArea.height / 2;
+    const radius = Math.min(cropArea.width, cropArea.height) / 2;
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  } else {
+    drawRoundedRect(ctx, cropArea.x, cropArea.y, cropArea.width, cropArea.height, 48);
+  }
+  ctx.clip();
+
+  // Dark Emerald Background
+  ctx.fillStyle = '#004729';
+  ctx.fill();
+
+  // Stylized Avatar Silhouette in Yellow/Green
+  const cx = cropArea.x + cropArea.width / 2;
+  const cy = cropArea.y + cropArea.height / 2;
+
+  // Head Circle
+  ctx.fillStyle = '#FFEB00';
+  ctx.beginPath();
+  ctx.arc(cx, cy - 60, cropArea.width * 0.2, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Cool Sunglasses Accent
+  ctx.fillStyle = '#00381F';
+  const glassW = cropArea.width * 0.12;
+  const glassH = cropArea.width * 0.07;
+  ctx.fillRect(cx - glassW - 10, cy - 80, glassW, glassH);
+  ctx.fillRect(cx + 10, cy - 80, glassW, glassH);
+  ctx.fillRect(cx - 10, cy - 70, 20, 8);
+
+  // Shoulders Silhouette
+  ctx.fillStyle = '#FFEB00';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + cropArea.height * 0.35, cropArea.width * 0.38, cropArea.height * 0.28, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Clean Upload Prompt Text
+  ctx.fillStyle = '#00381F';
+  ctx.font = '800 38px "Plus Jakarta Sans", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('TAP TO UPLOAD PHOTO', cx, cy + cropArea.height * 0.38);
+
+  ctx.restore();
+}
+
 function drawTransformedImage(
   ctx: CanvasRenderingContext2D,
   img: HTMLImageElement,
@@ -82,7 +139,7 @@ function drawGoaDevanagariSticker(ctx: CanvasRenderingContext2D, x: number, y: n
 }
 
 /**
- * Render Format A: Profile Frame (Official Emerald Green Theme)
+ * Render Format A: Profile Frame (Beautiful Official Theme)
  */
 export function renderFormatA(
   canvas: HTMLCanvasElement,
@@ -140,16 +197,7 @@ export function renderFormatA(
   if (img) {
     drawTransformedImage(ctx, img, cropArea, transform, true);
   } else {
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(CANVAS_SIZE / 2, cropArea.y + photoSize / 2, photoSize / 2, 0, Math.PI * 2);
-    ctx.fillStyle = '#004A2B';
-    ctx.fill();
-    ctx.fillStyle = '#FFEB00';
-    ctx.font = '700 48px "Plus Jakarta Sans", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('UPLOAD PHOTO', CANVAS_SIZE / 2, cropArea.y + photoSize / 2);
-    ctx.restore();
+    drawAvatarPlaceholder(ctx, cropArea, true);
   }
 
   // 4. Concentric Dual Ring Frames (Yellow + Hot Pink)
@@ -223,7 +271,7 @@ export function renderFormatA(
 }
 
 /**
- * Render Format B: Builder Badge (Official Emerald Green Theme)
+ * Render Format B: Builder Badge (Beautiful & Perfectly Balanced Layout)
  */
 export function renderFormatB(
   canvas: HTMLCanvasElement,
@@ -256,20 +304,20 @@ export function renderFormatB(
   // 2. Poster Tall Serif Title "HACKER HOUSE"
   ctx.save();
   ctx.fillStyle = '#FFEB00';
-  ctx.font = '900 110px "Playfair Display", serif';
+  ctx.font = '900 115px "Playfair Display", serif';
   ctx.textAlign = 'center';
-  ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 200);
+  ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 210);
 
   ctx.fillStyle = '#FF007A';
-  ctx.font = '800 30px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
   ctx.letterSpacing = '4px';
-  ctx.fillText('OFFICIAL BUILDER PASS • GOA 2026', CANVAS_SIZE / 2, 255);
+  ctx.fillText('OFFICIAL BUILDER PASS  •  GOA 2026', CANVAS_SIZE / 2, 270);
   ctx.restore();
 
   // 3. Photo Area (Rounded Frame with Yellow Border)
   const photoSize = 740;
   const photoX = (CANVAS_SIZE - photoSize) / 2;
-  const photoY = 320;
+  const photoY = 340;
 
   const photoArea = {
     x: photoX,
@@ -281,15 +329,7 @@ export function renderFormatB(
   if (img) {
     drawTransformedImage(ctx, img, photoArea, transform, false);
   } else {
-    ctx.save();
-    drawRoundedRect(ctx, photoX, photoY, photoSize, photoSize, 40);
-    ctx.fillStyle = '#004226';
-    ctx.fill();
-    ctx.fillStyle = '#FFEB00';
-    ctx.font = '700 42px "Plus Jakarta Sans", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('UPLOAD PHOTO', photoX + photoSize / 2, photoY + photoSize / 2);
-    ctx.restore();
+    drawAvatarPlaceholder(ctx, photoArea, false);
   }
 
   // Photo Frame Yellow Border
@@ -303,32 +343,35 @@ export function renderFormatB(
   // 4. Devanagari "गोवा" Hot Pink Sticker Badge Overlay
   drawGoaDevanagariSticker(ctx, CANVAS_SIZE / 2 - 190, photoY + photoSize - 60, 380, 120);
 
-  // 5. Details Section Layout
-  let currentY = photoY + photoSize + 150;
+  // 5. Details Section Layout (Balanced Vertical Spacing & Clean Typography)
+  let currentY = photoY + photoSize + 175;
 
+  // Name in Playfair Serif
   ctx.save();
   const displayName = details.name.trim() || 'Ada Lovelace';
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = '900 84px "Playfair Display", serif';
+  ctx.font = '900 86px "Playfair Display", serif';
   ctx.textAlign = 'center';
   ctx.fillText(displayName, CANVAS_SIZE / 2, currentY);
 
-  currentY += 80;
+  currentY += 95;
 
+  // Role / Stack Tag (Hot Pink Pill)
   const displayRole = details.role.trim() || 'Full-stack • React / Node';
   ctx.fillStyle = '#FF007A';
   const roleW = Math.max(540, ctx.measureText(displayRole.toUpperCase()).width + 120);
   const roleX = (CANVAS_SIZE - roleW) / 2;
-  drawRoundedRect(ctx, roleX, currentY, roleW, 70, 35);
+  drawRoundedRect(ctx, roleX, currentY - 45, roleW, 70, 35);
   ctx.fill();
 
   ctx.fillStyle = '#FFFFFF';
   ctx.font = '800 30px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText(displayRole.toUpperCase(), CANVAS_SIZE / 2, currentY + 46);
+  ctx.fillText(displayRole.toUpperCase(), CANVAS_SIZE / 2, currentY + 2);
 
-  currentY += 130;
+  currentY += 105;
 
+  // Builder Title (Electric Yellow)
   const displayTitle = details.title.trim() || 'Full-Stack Wanderer';
   ctx.fillStyle = '#FFEB00';
   ctx.font = '800 44px "Plus Jakarta Sans", sans-serif';
