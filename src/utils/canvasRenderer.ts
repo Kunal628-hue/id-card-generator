@@ -84,23 +84,23 @@ function drawVectorPlaceholder(
 function drawQRCodeGraphic(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
   ctx.save();
   ctx.fillStyle = '#FFEB00';
-  drawRoundedRect(ctx, x, y, size, size, 16);
+  drawRoundedRect(ctx, x, y, size, size, 20);
   ctx.fill();
 
   ctx.fillStyle = '#004729';
   const grid = 7;
-  const cellSize = (size - 20) / grid;
+  const cellSize = (size - 24) / grid;
   
   for (let i = 0; i < grid; i++) {
     for (let j = 0; j < grid; j++) {
       if ((i === 0 || i === grid - 1 || j === 0 || j === grid - 1 || (i % 2 === 0 && j % 2 === 1)) && !(i > 1 && i < 5 && j > 1 && j < 5)) {
-        ctx.fillRect(x + 10 + i * cellSize, y + 10 + j * cellSize, cellSize - 1.5, cellSize - 1.5);
+        ctx.fillRect(x + 12 + i * cellSize, y + 12 + j * cellSize, cellSize - 1.5, cellSize - 1.5);
       }
     }
   }
   
   ctx.fillStyle = '#FF007A';
-  ctx.fillRect(x + size / 2 - 8, y + size / 2 - 8, 16, 16);
+  ctx.fillRect(x + size / 2 - 10, y + size / 2 - 10, 20, 20);
   ctx.restore();
 }
 
@@ -299,7 +299,7 @@ export function renderFormatA(
 }
 
 /**
- * Render Format B: Builder Badge (Clean, Wide Banners, Zero Clutter)
+ * Render Format B: Builder Badge (Perfectly Spaced & High Impact Size)
  */
 export function renderFormatB(
   canvas: HTMLCanvasElement,
@@ -332,18 +332,18 @@ export function renderFormatB(
   // 2. Poster Header
   ctx.save();
   ctx.fillStyle = '#FFEB00';
-  ctx.font = '900 115px "Playfair Display", serif';
+  ctx.font = '900 120px "Playfair Display", serif';
   ctx.textAlign = 'center';
   ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 175);
 
   ctx.fillStyle = '#FF007A';
-  ctx.font = '800 30px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
   ctx.letterSpacing = '4px';
-  ctx.fillText('OFFICIAL BUILDER PASS  •  GOA 2026', CANVAS_SIZE / 2, 230);
+  ctx.fillText('OFFICIAL BUILDER PASS  •  GOA 2026', CANVAS_SIZE / 2, 235);
   ctx.restore();
 
-  // 3. Photo Area (720px Photo Frame)
-  const photoSize = 720;
+  // 3. Photo Area (680px Photo Frame)
+  const photoSize = 680;
   const photoX = (CANVAS_SIZE - photoSize) / 2;
   const photoY = 270;
 
@@ -371,94 +371,94 @@ export function renderFormatB(
   // 4. Devanagari "गोवा" Hot Pink Sticker Badge Overlay
   drawGoaDevanagariSticker(ctx, CANVAS_SIZE / 2 - 190, photoY + photoSize - 55, 380, 120);
 
-  // 5. User Details Section
+  // 5. User Details Section (Larger Fonts & Balanced Vertical Spacing)
   let currentY = photoY + photoSize + 145;
 
-  // Name in Large Bold Serif Font (110px)
+  // Name in Extra Large Bold Serif Font (120px)
   ctx.save();
   const displayName = details.name.trim() || 'Ada Lovelace';
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = '900 110px "Playfair Display", serif';
+  ctx.font = '900 120px "Playfair Display", serif';
   ctx.textAlign = 'center';
   ctx.fillText(displayName, CANVAS_SIZE / 2, currentY);
 
   currentY += 75;
 
-  // WIDE Hot Pink Role Banner (Increased width spanning 1500px across card!)
+  // WIDE & THICK Hot Pink Role Banner (Increased size & thickness: 1560px wide x 110px high)
   const displayRole = details.role.trim() || 'Full-stack • React / Node';
-  const roleW = 1500;
-  const roleH = 90;
+  const roleW = 1560;
+  const roleH = 110;
   const roleX = (CANVAS_SIZE - roleW) / 2;
 
   ctx.fillStyle = '#FF007A';
-  drawRoundedRect(ctx, roleX, currentY, roleW, roleH, 45);
+  drawRoundedRect(ctx, roleX, currentY, roleW, roleH, 55);
   ctx.fill();
 
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 6;
   ctx.strokeStyle = '#FFEB00';
   ctx.stroke();
 
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = '800 38px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '800 44px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText(displayRole.toUpperCase(), CANVAS_SIZE / 2, currentY + 58);
+  ctx.fillText(displayRole.toUpperCase(), CANVAS_SIZE / 2, currentY + 70);
 
-  currentY += 165;
+  currentY += 185;
 
-  // Builder Title (Electric Yellow)
+  // Builder Title (Increased font size 54px)
   const displayTitle = details.title.trim() || 'Full-Stack Wanderer';
   ctx.fillStyle = '#FFEB00';
-  ctx.font = '800 48px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '800 54px "Plus Jakarta Sans", sans-serif';
   ctx.fillText(`— ${displayTitle.toUpperCase()} —`, CANVAS_SIZE / 2, currentY);
 
-  currentY += 95;
+  currentY += 105;
 
-  // 6. WIDE Verification & Handle Banner (Spans 1500px across bottom of card!)
-  const bannerW = 1500;
-  const bannerH = 160;
+  // 6. WIDE & TALL Bottom Verification Banner (Spans 1560px wide x 230px tall, positioned down to fill bottom area!)
+  const bannerW = 1560;
+  const bannerH = 230;
   const bannerX = (CANVAS_SIZE - bannerW) / 2;
   const bannerY = currentY;
 
   ctx.save();
   ctx.fillStyle = '#004729';
-  drawRoundedRect(ctx, bannerX, bannerY, bannerW, bannerH, 28);
+  drawRoundedRect(ctx, bannerX, bannerY, bannerW, bannerH, 32);
   ctx.fill();
 
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 5;
   ctx.strokeStyle = '#FFEB00';
   ctx.stroke();
 
-  // QR Code on Left Side of Banner
-  const qrSize = 110;
-  drawQRCodeGraphic(ctx, bannerX + 30, bannerY + 25, qrSize);
+  // QR Code on Left Side of Banner (Size 160px)
+  const qrSize = 160;
+  drawQRCodeGraphic(ctx, bannerX + 40, bannerY + 35, qrSize);
 
-  // Text inside Wide Banner
+  // Large Text inside Wide Banner
   const handleText = details.handle.trim()
     ? (details.handle.startsWith('@') ? details.handle : `@${details.handle}`)
     : '@adalovelace';
 
   ctx.fillStyle = '#FFEB00';
-  ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '900 40px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('VERIFIED BUILDER PASS', bannerX + 175, bannerY + 68);
+  ctx.fillText('VERIFIED BUILDER PASS', bannerX + 230, bannerY + 95);
 
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = '700 36px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText(`${handleText}  •  GOA 2026`, bannerX + 175, bannerY + 118);
+  ctx.font = '800 46px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText(`${handleText}  •  GOA 2026`, bannerX + 230, bannerY + 162);
 
   ctx.restore();
 
   // 7. Footer Line & Details
   ctx.save();
   ctx.strokeStyle = '#FFEB00';
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 5;
   ctx.beginPath();
   ctx.moveTo(100, CANVAS_SIZE - 95);
   ctx.lineTo(CANVAS_SIZE - 100, CANVAS_SIZE - 95);
   ctx.stroke();
 
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = '700 28px "Plus Jakarta Sans", sans-serif';
+  ctx.font = '800 30px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'left';
   ctx.fillText('GOA, INDIA  •  28-31 OCT 2026', 100, CANVAS_SIZE - 45);
 
