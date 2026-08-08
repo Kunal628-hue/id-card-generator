@@ -14,7 +14,11 @@ export interface UserDetails {
   photoShape: PhotoShape;
   showQrCode?: boolean;
   qrData?: string;
+  currentlyShipping?: string;
+  beachBag?: string[];
 }
+
+export const DEFAULT_BEACH_BAG = ['Coconut Water', 'VS Code', 'Lo-Fi Beats'];
 
 export interface ImageTransform {
   zoom: number;
