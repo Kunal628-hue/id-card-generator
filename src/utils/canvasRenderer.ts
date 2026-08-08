@@ -1,7 +1,30 @@
 import type { UserDetails, ImageTransform, PresetTheme, PhotoShape } from '../types';
+import { DEFAULT_BEACH_BAG } from '../types';
 import QRCode from 'qrcode';
 
 export const CANVAS_SIZE = 2000;
+
+const PAPER_COLOR = '#FDF6E9';
+// official-emerald's headerTextColor is bright yellow, tuned for its dark bg — too low-contrast as ink on the cream paper panel.
+const PAPER_INK_FALLBACK = '#0B4D2E';
+
+function paperInk(theme: PresetTheme): string {
+  return theme.id === 'official-emerald' ? PAPER_INK_FALLBACK : theme.headerTextColor;
+}
+
+function seededRandom(seed: string): () => number {
+  let h = 1779033703 ^ seed.length;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(h ^ seed.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return function () {
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  };
+}
 
 /**
  * Mathematically perfect rounded rectangle path without corner artifacts
@@ -70,32 +93,6 @@ function drawShapePath(
 }
 
 /**
- * Draw Grid Pixel Logo Icon
- */
-function drawGridPixelLogo(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  size: number,
-  yellowColor: string,
-  bgColor: string
-) {
-  ctx.save();
-  ctx.fillStyle = yellowColor;
-  ctx.fillRect(x, y, size, size);
-
-  ctx.fillStyle = bgColor;
-  const grid = 3;
-  const cellSize = size / grid;
-
-  ctx.fillRect(x + cellSize, y, cellSize, cellSize);
-  ctx.fillRect(x, y + cellSize, cellSize, cellSize);
-  ctx.fillRect(x + cellSize * 2, y + cellSize * 2, cellSize, cellSize);
-
-  ctx.restore();
-}
-
-/**
  * Draw scannable QR Code graphic onto canvas
  */
 function drawQRCodeGraphic(
@@ -149,7 +146,7 @@ function drawTransformedImage(
   fallbackBg: string = '#004D2D'
 ) {
   ctx.save();
-  
+
   drawShapePath(ctx, shape, cropArea);
   ctx.clip();
 
@@ -173,39 +170,504 @@ function drawTransformedImage(
   ctx.restore();
 }
 
-/**
- * Draw Official Devanagari "गोवा" Hot Pink Sticker Badge
- */
-function drawGoaDevanagariSticker(
+/* ------------------------------------------------------------------------ */
+/* Postcard illustration primitives                                         */
+/* ------------------------------------------------------------------------ */
+
+/** Cream paper card panel with a themed ink border, the base of the postcard layout */
+function drawPaperPanel(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
-  width: number,
-  height: number,
-  badgeBg: string = '#FF007A',
-  strokeColor: string = '#FFECA8',
-  textColor: string = '#FFFFFF'
+  w: number,
+  h: number,
+  theme: PresetTheme,
+  radius: number = 56
 ) {
   ctx.save();
-  
-  ctx.fillStyle = badgeBg;
-  drawRoundedRect(ctx, x, y, width, height, height / 2);
+  ctx.fillStyle = PAPER_COLOR;
+  drawRoundedRect(ctx, x, y, w, h, radius);
   ctx.fill();
-  
-  ctx.lineWidth = 4;
-  ctx.strokeStyle = strokeColor;
+
+  ctx.lineWidth = 10;
+  ctx.strokeStyle = paperInk(theme);
   ctx.stroke();
 
-  ctx.fillStyle = textColor;
-  ctx.font = '900 68px "Rozha One", "Noto Sans Devanagari", sans-serif';
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = theme.accentPink;
+  drawRoundedRect(ctx, x + 18, y + 18, w - 36, h - 36, Math.max(radius - 14, 0));
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawMiniPalm(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  baseY: number,
+  size: number,
+  leafColor: string,
+  trunkColor: string
+) {
+  ctx.save();
+  ctx.strokeStyle = trunkColor;
+  ctx.lineWidth = size * 0.14;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(cx, baseY + size * 0.6);
+  ctx.quadraticCurveTo(cx + size * 0.15, baseY + size * 0.1, cx, baseY - size * 0.3);
+  ctx.stroke();
+
+  ctx.fillStyle = leafColor;
+  const topX = cx;
+  const topY = baseY - size * 0.3;
+  for (let i = 0; i < 5; i++) {
+    const angle = -Math.PI / 2 + (i - 2) * 0.55;
+    const lx = topX + Math.cos(angle) * size * 0.55;
+    const ly = topY + Math.sin(angle) * size * 0.55;
+    const cx1 = topX + Math.cos(angle) * size * 0.25 - Math.sin(angle) * size * 0.12;
+    const cx2 = topX + Math.cos(angle) * size * 0.25 + Math.sin(angle) * size * 0.12;
+    ctx.beginPath();
+    ctx.moveTo(topX, topY);
+    ctx.quadraticCurveTo(cx1, topY + Math.sin(angle) * size * 0.25, lx, ly);
+    ctx.quadraticCurveTo(cx2, topY + Math.sin(angle) * size * 0.25, topX, topY);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawSparkle(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number, color: string) {
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - size);
+  ctx.quadraticCurveTo(cx + size * 0.15, cy - size * 0.15, cx + size, cy);
+  ctx.quadraticCurveTo(cx + size * 0.15, cy + size * 0.15, cx, cy + size);
+  ctx.quadraticCurveTo(cx - size * 0.15, cy + size * 0.15, cx - size, cy);
+  ctx.quadraticCurveTo(cx - size * 0.15, cy - size * 0.15, cx, cy - size);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawBirdMark(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number, color: string) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = size * 0.16;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(cx - size, cy);
+  ctx.quadraticCurveTo(cx - size * 0.3, cy - size * 0.7, cx, cy);
+  ctx.quadraticCurveTo(cx + size * 0.3, cy - size * 0.7, cx + size, cy);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawWaveLine(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, color: string) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  const bumps = Math.max(2, Math.round(w / 60));
+  ctx.moveTo(x, y);
+  for (let i = 0; i < bumps; i++) {
+    const segW = w / bumps;
+    const midX = x + segW * i + segW / 2;
+    const endX = x + segW * (i + 1);
+    ctx.quadraticCurveTo(midX, y + (i % 2 === 0 ? -12 : 12), endX, y);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
+/** Perforated-edge postage stamp with a tiny beach scene */
+function drawPostageStamp(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  theme: PresetTheme
+) {
+  const ink = paperInk(theme);
+  ctx.save();
+
+  ctx.fillStyle = PAPER_COLOR;
+  drawRoundedRect(ctx, x, y, w, h, 10);
+  ctx.fill();
+
+  ctx.strokeStyle = ink;
+  ctx.lineWidth = 4;
+  ctx.setLineDash([w / 16, w / 32]);
+  drawRoundedRect(ctx, x, y, w, h, 10);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  const pad = w * 0.14;
+  const ix = x + pad;
+  const iy = y + pad;
+  const iw = w - pad * 2;
+  const ih = h * 0.6;
+
+  ctx.save();
+  drawRoundedRect(ctx, ix, iy, iw, ih, 4);
+  ctx.clip();
+  ctx.fillStyle = PAPER_COLOR;
+  ctx.fillRect(ix, iy, iw, ih);
+
+  // sun
+  ctx.fillStyle = theme.accentPink;
+  ctx.beginPath();
+  ctx.arc(ix + iw * 0.72, iy + ih * 0.3, ih * 0.24, 0, Math.PI * 2);
+  ctx.fill();
+
+  // sea line
+  ctx.strokeStyle = ink;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(ix, iy + ih * 0.72);
+  ctx.lineTo(ix + iw, iy + ih * 0.72);
+  ctx.stroke();
+
+  drawMiniPalm(ctx, ix + iw * 0.28, iy + ih * 0.85, ih * 0.55, theme.accentPink, ink);
+  ctx.restore();
+
+  ctx.fillStyle = ink;
   ctx.textAlign = 'center';
-  ctx.fillText('गोवा', x + width / 2, y + height / 2 + 22);
+  ctx.font = `900 ${Math.round(w * 0.16)}px "Plus Jakarta Sans", sans-serif`;
+  ctx.fillText('GOA', x + w / 2, y + h * 0.84);
+  ctx.font = `700 ${Math.round(w * 0.08)}px "Plus Jakarta Sans", sans-serif`;
+  ctx.fillText('INDIA', x + w / 2, y + h * 0.95);
+
+  ctx.restore();
+}
+
+/** Small hanging tag/ribbon with a single point cut into the bottom edge */
+function drawHangingTag(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  y: number,
+  w: number,
+  h: number,
+  lines: string[],
+  fill: string
+) {
+  const x = cx - w / 2;
+  ctx.save();
+  ctx.fillStyle = fill;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x + w, y);
+  ctx.lineTo(x + w, y + h * 0.72);
+  ctx.lineTo(x + w / 2, y + h);
+  ctx.lineTo(x, y + h * 0.72);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.textAlign = 'center';
+  if (lines[0]) {
+    ctx.font = `900 ${Math.round(h * 0.34)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText(lines[0], cx, y + h * 0.42);
+  }
+  if (lines[1]) {
+    ctx.font = `700 ${Math.round(h * 0.18)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText(lines[1], cx, y + h * 0.62);
+  }
+  ctx.restore();
+}
+
+/** Full-width ribbon banner with arrow-notched ends */
+function drawFullRibbon(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  text: string,
+  fill: string,
+  fontSize: number
+) {
+  const notch = h * 0.4;
+  ctx.save();
+  ctx.fillStyle = fill;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x + w, y);
+  ctx.lineTo(x + w - notch, y + h / 2);
+  ctx.lineTo(x + w, y + h);
+  ctx.lineTo(x, y + h);
+  ctx.lineTo(x + notch, y + h / 2);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.textAlign = 'center';
+  ctx.font = `900 ${fontSize}px "Plus Jakarta Sans", sans-serif`;
+  ctx.fillText(text, x + w / 2, y + h * 0.68);
+  ctx.restore();
+}
+
+/** Circular seal/stamp badge with two lines of caption text */
+function drawCircularSeal(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  r: number,
+  theme: PresetTheme,
+  lines: string[]
+) {
+  const ink = paperInk(theme);
+  ctx.save();
+
+  ctx.fillStyle = PAPER_COLOR;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = ink;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, r - 14, 0, Math.PI * 2);
+  ctx.setLineDash([5, 7]);
+  ctx.lineWidth = 2.5;
+  ctx.strokeStyle = ink;
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  drawMiniPalm(ctx, cx, cy + r * 0.05, r * 0.3, theme.accentPink, ink);
+
+  ctx.fillStyle = ink;
+  ctx.textAlign = 'center';
+  ctx.font = `800 ${Math.round(r * 0.13)}px "Plus Jakarta Sans", sans-serif`;
+  if (lines[0]) ctx.fillText(lines[0], cx, cy - r * 0.68);
+  if (lines[1]) ctx.fillText(lines[1], cx, cy + r * 0.82);
+  ctx.restore();
+}
+
+/** Two-tone scalloped/zigzag ring, used around circular photos */
+function drawScallopedRing(
+  ctx: CanvasRenderingContext2D,
+  cropArea: { x: number; y: number; width: number; height: number },
+  theme: PresetTheme,
+  ringWidth: number = 50
+) {
+  const cx = cropArea.x + cropArea.width / 2;
+  const cy = cropArea.y + cropArea.height / 2;
+  const rInner = Math.max(cropArea.width, cropArea.height) / 2 + 8;
+  const rOuter = rInner + ringWidth;
+  const teeth = 30;
+
+  ctx.save();
+  for (let i = 0; i < teeth; i++) {
+    const a0 = (Math.PI * 2 * i) / teeth;
+    const a1 = (Math.PI * 2 * (i + 1)) / teeth;
+    const aMid = (a0 + a1) / 2;
+    ctx.fillStyle = i % 2 === 0 ? theme.primaryYellow : theme.accentPink;
+    ctx.beginPath();
+    ctx.moveTo(cx + rInner * Math.cos(a0), cy + rInner * Math.sin(a0));
+    ctx.lineTo(cx + rOuter * Math.cos(aMid), cy + rOuter * Math.sin(aMid));
+    ctx.lineTo(cx + rInner * Math.cos(a1), cy + rInner * Math.sin(a1));
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = paperInk(theme);
+  ctx.beginPath();
+  ctx.arc(cx, cy, rInner, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+/** Signpost with stacked BUILD / SHIP / REPEAT arrow signs */
+function drawSignpost(ctx: CanvasRenderingContext2D, x: number, y: number, height: number, theme: PresetTheme) {
+  const ink = paperInk(theme);
+  ctx.save();
+
+  ctx.fillStyle = ink;
+  ctx.fillRect(x - 7, y, 14, height);
+
+  const labels: { text: string; fill: string; textColor: string; stroke?: boolean }[] = [
+    { text: 'BUILD', fill: theme.accentPink, textColor: '#FFFFFF' },
+    { text: 'SHIP', fill: ink, textColor: '#FFFFFF' },
+    { text: 'REPEAT', fill: PAPER_COLOR, textColor: ink, stroke: true },
+  ];
+  const signW = 230;
+  const signH = 76;
+  const gap = 30;
+
+  labels.forEach((l, i) => {
+    const sy = y + 24 + i * (signH + gap);
+    ctx.fillStyle = l.fill;
+    ctx.beginPath();
+    ctx.moveTo(x, sy);
+    ctx.lineTo(x + signW - 26, sy);
+    ctx.lineTo(x + signW, sy + signH / 2);
+    ctx.lineTo(x + signW - 26, sy + signH);
+    ctx.lineTo(x, sy + signH);
+    ctx.closePath();
+    ctx.fill();
+    if (l.stroke) {
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = ink;
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = l.textColor;
+    ctx.textAlign = 'center';
+    ctx.font = `900 34px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText(l.text, x + signW / 2 - 10, sy + signH / 2 + 12);
+  });
+
+  ctx.restore();
+}
+
+/** Simplified beach house scene: house, palm, moped, waterline */
+function drawBeachHouseScene(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  theme: PresetTheme
+) {
+  const ink = paperInk(theme);
+  ctx.save();
+
+  ctx.strokeStyle = ink;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(x, y + h * 0.92);
+  ctx.quadraticCurveTo(x + w * 0.5, y + h * 0.86, x + w, y + h * 0.92);
+  ctx.stroke();
+
+  const houseW = w * 0.62;
+  const houseH = h * 0.42;
+  const hx = x + w * 0.24;
+  const hy = y + h * 0.42;
+
+  ctx.fillStyle = PAPER_COLOR;
+  ctx.fillRect(hx, hy, houseW, houseH);
+  ctx.strokeStyle = ink;
+  ctx.lineWidth = 3;
+  ctx.strokeRect(hx, hy, houseW, houseH);
+
+  ctx.fillStyle = theme.accentPink;
+  ctx.beginPath();
+  ctx.moveTo(hx - 16, hy);
+  ctx.lineTo(hx + houseW / 2, hy - houseH * 0.55);
+  ctx.lineTo(hx + houseW + 16, hy);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = ink;
+  ctx.stroke();
+
+  ctx.fillStyle = ink;
+  ctx.fillRect(hx + houseW * 0.4, hy + houseH * 0.42, houseW * 0.2, houseH * 0.58);
+
+  ctx.strokeStyle = ink;
+  ctx.lineWidth = 2.5;
+  ctx.strokeRect(hx + houseW * 0.1, hy + houseH * 0.16, houseW * 0.18, houseH * 0.22);
+  ctx.strokeRect(hx + houseW * 0.72, hy + houseH * 0.16, houseW * 0.18, houseH * 0.22);
+
+  drawMiniPalm(ctx, x + w * 0.1, y + h * 0.9, w * 0.32, theme.accentPink, ink);
+
+  const mx = x + w * 0.82;
+  const my = y + h * 0.88;
+  ctx.strokeStyle = ink;
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.arc(mx - 24, my, 15, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(mx + 20, my, 15, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.strokeStyle = theme.accentPink;
+  ctx.beginPath();
+  ctx.moveTo(mx - 24, my - 13);
+  ctx.quadraticCurveTo(mx, my - 42, mx + 20, my - 13);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+/** Decorative (non-scannable) barcode made of deterministic pseudo-random bars */
+function drawBarcode(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, seedText: string, color: string) {
+  const rand = seededRandom(seedText || 'HHGOA2026');
+  ctx.save();
+  ctx.fillStyle = color;
+  let cx = x;
+  while (cx < x + w) {
+    const barW = 2 + Math.floor(rand() * 5);
+    if (rand() > 0.35) {
+      ctx.fillRect(cx, y, barW, h);
+    }
+    cx += barW + 2;
+  }
+  ctx.restore();
+}
+
+function generateBuilderId(seedText: string): string {
+  const rand = seededRandom(seedText || 'HHGOA2026');
+  const num = 1000 + Math.floor(rand() * 9000);
+  return `#HH-GOA-${num}`;
+}
+
+/** Bordered name plate box */
+function drawNamePlate(ctx: CanvasRenderingContext2D, cx: number, y: number, w: number, h: number, text: string, theme: PresetTheme, fontSize: number) {
+  const ink = paperInk(theme);
+  ctx.save();
+  ctx.fillStyle = PAPER_COLOR;
+  drawRoundedRect(ctx, cx - w / 2, y, w, h, 18);
+  ctx.fill();
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = ink;
+  ctx.stroke();
+
+  ctx.fillStyle = ink;
+  ctx.textAlign = 'center';
+  ctx.font = `900 ${fontSize}px "Playfair Display", serif`;
+  ctx.fillText(text, cx, y + h * 0.68);
+  ctx.restore();
+}
+
+/** "HACKER गोवा HOUSE" title with the Devanagari word picked out in accent pink */
+function drawPostcardTitle(ctx: CanvasRenderingContext2D, cx: number, y: number, theme: PresetTheme, fontSize: number) {
+  const ink = paperInk(theme);
+  ctx.save();
+  ctx.font = `900 ${fontSize}px "Playfair Display", serif`;
+
+  const partA = 'HACKER ';
+  const partB = 'गोवा';
+  const partC = ' HOUSE';
+  const wA = ctx.measureText(partA).width;
+  const wB = ctx.measureText(partB).width;
+  const wC = ctx.measureText(partC).width;
+  const total = wA + wB + wC;
+
+  let curX = cx - total / 2;
+  ctx.textAlign = 'left';
+
+  ctx.fillStyle = ink;
+  ctx.fillText(partA, curX, y);
+  curX += wA;
+
+  ctx.fillStyle = theme.accentPink;
+  ctx.fillText(partB, curX, y);
+  curX += wB;
+
+  ctx.fillStyle = ink;
+  ctx.fillText(partC, curX, y);
 
   ctx.restore();
 }
 
 /**
- * Render Format A: Profile Frame
+ * Render Format A: Profile Frame — illustrated postcard, lighter single-image share format
  */
 export function renderFormatA(
   canvas: HTMLCanvasElement,
@@ -221,106 +683,108 @@ export function renderFormatA(
   canvas.height = CANVAS_SIZE;
 
   const photoShape = details.photoShape || 'circle';
+  const ink = paperInk(theme);
 
-  // 1. Canvas Background
+  // 1. Outer themed background
   ctx.fillStyle = theme.bgColor;
   ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-  // 2. Top Title "HACKER HOUSE"
+  // 2. Cream paper panel
+  drawPaperPanel(ctx, 56, 56, CANVAS_SIZE - 112, CANVAS_SIZE - 112, theme, 72);
+
+  // 3. Postage stamp (top-left) & circular seal (top-right)
+  drawPostageStamp(ctx, 140, 140, 230, 270, theme);
+  drawCircularSeal(ctx, 1730, 290, 150, theme, ['BUILD IN GOA', 'SHIP FROM PARADISE']);
+
+  // 4. Hanging event tag
+  drawHangingTag(ctx, CANVAS_SIZE / 2, 20, 340, 140, ['HH GOA 2026', "LET'S BUILD"], ink);
+
+  // 5. Title
+  drawPostcardTitle(ctx, CANVAS_SIZE / 2, 470, theme, 108);
   ctx.save();
-  ctx.fillStyle = theme.headerTextColor;
-  ctx.font = '900 140px "Playfair Display", serif';
+  ctx.fillStyle = theme.accentPink;
   ctx.textAlign = 'center';
-  ctx.fillText('HACKER HOUSE', CANVAS_SIZE / 2, 280);
+  ctx.font = `800 32px "Plus Jakarta Sans", sans-serif`;
+  ctx.fillText('#FRAMEINGOA · GOA, INDIA', CANVAS_SIZE / 2, 522);
   ctx.restore();
 
-  // 3. Center Photo Frame
-  const photoSize = 1180;
+  // 6. Center Photo Frame
+  const photoSize = 1000;
   const cropArea = {
     x: (CANVAS_SIZE - photoSize) / 2,
-    y: (CANVAS_SIZE - photoSize) / 2 + 60,
+    y: 580,
     width: photoSize,
     height: photoSize,
   };
 
   if (img) {
-    drawTransformedImage(ctx, img, cropArea, transform, photoShape, theme.cardBg);
+    drawTransformedImage(ctx, img, cropArea, transform, photoShape, PAPER_COLOR);
   } else {
     ctx.save();
     drawShapePath(ctx, photoShape, cropArea);
-    ctx.fillStyle = theme.cardBg;
+    ctx.fillStyle = PAPER_COLOR;
     ctx.fill();
     ctx.restore();
   }
 
-  // Concentric Rings (Smooth Pathing)
+  if (photoShape === 'circle') {
+    drawScallopedRing(ctx, cropArea, theme, 50);
+  } else {
+    ctx.save();
+    ctx.lineWidth = 40;
+    ctx.strokeStyle = theme.primaryYellow;
+    drawShapePath(ctx, photoShape, cropArea, 24);
+    ctx.stroke();
+    ctx.lineWidth = 20;
+    ctx.strokeStyle = theme.accentPink;
+    drawShapePath(ctx, photoShape, cropArea, 54);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // 7. Name plate
+  const displayName = (details.name.trim() || 'SATOSHI NAKAMOTO').toUpperCase();
+  drawNamePlate(ctx, CANVAS_SIZE / 2, cropArea.y + photoSize + 40, 900, 140, displayName, theme, 54);
+
+  // 8. Role / title pill
+  const roleText = (details.role.trim() || 'FULLSTACK WEB3').toUpperCase();
+  const titleText = (details.title.trim() || 'PROTOCOL ENGINEER').toUpperCase();
   ctx.save();
-
-  // Outer Ring
-  ctx.lineWidth = 44;
-  ctx.strokeStyle = theme.primaryYellow;
-  drawShapePath(ctx, photoShape, cropArea, 26);
-  ctx.stroke();
-
-  // Inner Ring
-  ctx.lineWidth = 22;
-  ctx.strokeStyle = theme.accentPink;
-  drawShapePath(ctx, photoShape, cropArea, 58);
-  ctx.stroke();
-
-  ctx.restore();
-
-  // 4. Top Devanagari "गोवा" Sticker Badge
-  drawGoaDevanagariSticker(
-    ctx,
-    CANVAS_SIZE / 2 - 150,
-    cropArea.y - 45,
-    300,
-    90,
-    theme.accentPink,
-    theme.primaryYellow,
-    '#FFFFFF'
-  );
-
-  // 5. Bottom Branded Badge Pill
-  ctx.save();
-  const pillW = 480;
-  const pillH = 160;
-  const pillX = (CANVAS_SIZE - pillW) / 2;
-  const pillY = cropArea.y + photoSize - 30;
-
+  const pillY = cropArea.y + photoSize + 200;
+  const pillW = 900;
+  const pillH = 110;
   ctx.fillStyle = theme.accentPink;
-  drawRoundedRect(ctx, pillX, pillY, pillW, pillH, 80);
+  drawRoundedRect(ctx, (CANVAS_SIZE - pillW) / 2, pillY, pillW, pillH, 55);
   ctx.fill();
-
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = '900 48px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('HH GOA 2026', CANVAS_SIZE / 2, pillY + 70);
-
-  ctx.font = '700 28px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText('#FrameInGoa', CANVAS_SIZE / 2, pillY + 120);
-
+  ctx.font = `800 40px "Plus Jakarta Sans", sans-serif`;
+  ctx.fillText(`${roleText} · ${titleText}`, CANVAS_SIZE / 2, pillY + 70);
   ctx.restore();
 
-  // 6. QR Code (Bottom Right Corner)
+  // 9. Scattered doodles
+  drawSparkle(ctx, 160, 1720, 26, theme.primaryYellow);
+  drawBirdMark(ctx, 1780, 500, 30, ink);
+  drawBirdMark(ctx, 1840, 560, 22, ink);
+  drawWaveLine(ctx, 130, 1860, 300, ink);
+
+  // 10. QR Code (bottom-right)
   if (details.showQrCode ?? true) {
     const qrText = details.qrData?.trim() || 'https://x.com/HackerHouseGoa';
-    drawQRCodeGraphic(
-      ctx,
-      qrText,
-      CANVAS_SIZE - 280,
-      CANVAS_SIZE - 280,
-      200,
-      '#000000',
-      '#FFFFFF',
-      24
-    );
+    drawQRCodeGraphic(ctx, qrText, CANVAS_SIZE - 320, CANVAS_SIZE - 300, 180, ink, PAPER_COLOR, 20);
   }
+
+  // 11. Bottom-left hashtag
+  ctx.save();
+  ctx.fillStyle = ink;
+  ctx.textAlign = 'left';
+  ctx.font = `800 34px "Plus Jakarta Sans", sans-serif`;
+  ctx.fillText('#FrameInGoa', 130, 1900);
+  ctx.restore();
 }
 
 /**
- * Render Format B: Builder Badge
+ * Render Format B: Builder Badge — full illustrated postcard pass with footer detail card
  */
 export function renderFormatB(
   canvas: HTMLCanvasElement,
@@ -339,212 +803,227 @@ export function renderFormatB(
   canvas.height = CANVAS_H;
 
   const photoShape = details.photoShape || 'square';
+  const ink = paperInk(theme);
 
-  // 1. Canvas Background
+  // 1. Outer themed background
   ctx.fillStyle = theme.bgColor;
   ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
 
-  // 2. Outer Border Frame
-  ctx.save();
-  ctx.strokeStyle = theme.primaryYellow;
-  ctx.lineWidth = 8;
-  drawRoundedRect(ctx, 40, 40, CANVAS_W - 80, CANVAS_H - 80, 60);
-  ctx.stroke();
-  ctx.restore();
+  // 2. Cream paper panel
+  drawPaperPanel(ctx, 48, 48, CANVAS_W - 96, CANVAS_H - 96, theme, 64);
 
-  // 3. Top Lanyard Hole Slot (Realistic Event Badge Punch Slot)
+  // 3. Lanyard punch slot
   ctx.save();
-  ctx.fillStyle = theme.cardBg;
-  drawRoundedRect(ctx, 840, 30, 320, 46, 23);
+  ctx.fillStyle = PAPER_COLOR;
+  drawRoundedRect(ctx, 840, 24, 320, 46, 23);
   ctx.fill();
   ctx.lineWidth = 4;
-  ctx.strokeStyle = theme.primaryYellow;
+  ctx.strokeStyle = ink;
   ctx.stroke();
-
-  drawRoundedRect(ctx, 880, 40, 240, 26, 13);
+  drawRoundedRect(ctx, 880, 34, 240, 26, 13);
   ctx.fillStyle = theme.bgColor;
   ctx.fill();
   ctx.restore();
 
-  // 4. Top Right Sticker Badge (Devanagari "गोवा" or Badge Type)
+  // 4. Postage stamp (top-left) & circular seal (top-right)
+  drawPostageStamp(ctx, 100, 110, 200, 240, theme);
   const badgeTypeLabel = details.badgeType ? details.badgeType.toUpperCase() : 'BUILDER';
-  drawGoaDevanagariSticker(
-    ctx,
-    CANVAS_W - 320,
-    90,
-    260,
-    90,
-    theme.accentPink,
-    theme.primaryYellow,
-    '#FFFFFF'
-  );
+  drawCircularSeal(ctx, 1790, 240, 140, theme, ['BUILD IN GOA', 'SHIP FROM PARADISE']);
 
-  // 5. Header: HACKER HOUSE & Subtitle
+  // 5. Hanging event tag
+  drawHangingTag(ctx, CANVAS_W / 2, 20, 320, 130, ['HH GOA 2026', `${badgeTypeLabel} PASS`], ink);
+
+  // 6. Title
+  drawPostcardTitle(ctx, CANVAS_W / 2, 430, theme, 96);
   ctx.save();
-  ctx.fillStyle = theme.headerTextColor;
-  ctx.font = '900 135px "Playfair Display", serif';
+  ctx.fillStyle = theme.accentPink;
   ctx.textAlign = 'center';
-  ctx.fillText('HACKER HOUSE', CANVAS_W / 2, 220);
-
-  ctx.fillStyle = theme.primaryYellow;
-  ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText(`OFFICIAL ${badgeTypeLabel} PASS  ·  GOA 2026`, CANVAS_W / 2, 285);
+  ctx.font = `800 30px "Plus Jakarta Sans", sans-serif`;
+  ctx.fillText(`OFFICIAL ${badgeTypeLabel} PASS · GOA 2026`, CANVAS_W / 2, 478);
   ctx.restore();
 
-  // 6. Center Photo Area
-  const photoSize = 880;
+  // 7. Center Photo Area
+  const photoSize = 760;
   const photoX = (CANVAS_W - photoSize) / 2;
-  const photoY = 340;
-
-  const photoArea = {
-    x: photoX,
-    y: photoY,
-    width: photoSize,
-    height: photoSize,
-  };
+  const photoY = 540;
+  const photoArea = { x: photoX, y: photoY, width: photoSize, height: photoSize };
 
   if (img) {
-    drawTransformedImage(ctx, img, photoArea, transform, photoShape, theme.cardBg);
+    drawTransformedImage(ctx, img, photoArea, transform, photoShape, PAPER_COLOR);
   } else {
     ctx.save();
     drawShapePath(ctx, photoShape, photoArea);
-    ctx.fillStyle = theme.cardBg;
+    ctx.fillStyle = PAPER_COLOR;
     ctx.fill();
-
-    ctx.fillStyle = theme.primaryYellow;
-    ctx.font = '700 44px "Plus Jakarta Sans", sans-serif';
+    ctx.fillStyle = ink;
+    ctx.font = `700 36px "Plus Jakarta Sans", sans-serif`;
     ctx.textAlign = 'center';
     ctx.fillText('PHOTO AREA', photoX + photoSize / 2, photoY + photoSize / 2);
     ctx.restore();
   }
 
-  // Photo Frame Border
-  ctx.save();
-  ctx.lineWidth = 22;
-  ctx.strokeStyle = theme.primaryYellow;
-  drawShapePath(ctx, photoShape, photoArea);
-  ctx.stroke();
-  ctx.restore();
-
-  // 7. Full Name
-  let currentY = photoY + photoSize + 130;
-  ctx.save();
-  const displayName = (details.name.trim() || 'SATOSHI NAKAMOTO').toUpperCase();
-  ctx.fillStyle = theme.headerTextColor;
-  ctx.font = '900 120px "Playfair Display", serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(displayName, CANVAS_W / 2, currentY);
-
-  currentY += 80;
-
-  // 8. Role & Title Pill Banner
-  const roleText = (details.role.trim() || 'FULLSTACK WEB3').toUpperCase();
-  const titleText = (details.title.trim() || 'PROTOCOL ENGINEER').toUpperCase();
-  const fullTagText = `${roleText} · ${titleText}`;
-
-  const roleW = 1680;
-  const roleH = 120;
-  const roleX = (CANVAS_W - roleW) / 2;
-
-  ctx.fillStyle = theme.accentPink;
-  drawRoundedRect(ctx, roleX, currentY, roleW, roleH, 60);
-  ctx.fill();
-
-  ctx.lineWidth = 4;
-  ctx.strokeStyle = theme.primaryYellow;
-  ctx.stroke();
-
-  ctx.fillStyle = '#FFFFFF';
-  ctx.font = '800 44px "Plus Jakarta Sans", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(fullTagText, CANVAS_W / 2, currentY + 76);
-
-  currentY += 170;
-
-  // 9. Dedicated Verification Card & Scannable QR Block (Y: 1640 to 2500)
-  const cardW = 1680;
-  const cardH = 860;
-  const cardX = (CANVAS_W - cardW) / 2;
-  const cardY = currentY + 20;
-
-  ctx.save();
-  ctx.fillStyle = theme.cardBg;
-  drawRoundedRect(ctx, cardX, cardY, cardW, cardH, 44);
-  ctx.fill();
-
-  ctx.lineWidth = 4;
-  ctx.strokeStyle = theme.primaryYellow;
-  ctx.stroke();
-
-  // QR Code on Left of Card Block (Large, crisp 640x640)
-  if (details.showQrCode ?? true) {
-    const qrSize = 640;
-    const qrX = cardX + 80;
-    const qrY = cardY + 110;
-    const qrText = details.qrData?.trim() || 'https://x.com/HackerHouseGoa';
-    drawQRCodeGraphic(ctx, qrText, qrX, qrY, qrSize, '#000000', '#FFFFFF', 28);
+  if (photoShape === 'circle') {
+    drawScallopedRing(ctx, photoArea, theme, 42);
+  } else {
+    ctx.save();
+    ctx.lineWidth = 22;
+    ctx.strokeStyle = theme.primaryYellow;
+    drawShapePath(ctx, photoShape, photoArea);
+    ctx.stroke();
+    ctx.restore();
   }
 
-  // Right Side Info inside Card Block
-  const textX = cardX + 780;
-  const handleText = details.handle.trim()
-    ? (details.handle.startsWith('@') ? details.handle : `@${details.handle}`)
-    : '@HackerHouseGoa';
-  const companyText = details.company.trim() || 'HH GOA 2026';
-  const passIdText = `PASS ID: HH26-${(details.handle || 'GOA').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 8)}-${(details.badgeType || 'BUILDER').toUpperCase()}`;
+  // 8. Signpost (left) & beach house scene (right), flanking the photo/name column
+  drawSignpost(ctx, 260, 700, 560, theme);
+  drawBeachHouseScene(ctx, 1440, 680, 460, 640, theme);
 
-  ctx.fillStyle = theme.primaryYellow;
-  ctx.font = '900 46px "Plus Jakarta Sans", sans-serif';
-  ctx.textAlign = 'left';
-  ctx.fillText('VERIFIED BUILDER PASS', textX, cardY + 160);
+  // 9. Name plate
+  let currentY = photoY + photoSize + 50;
+  const displayName = (details.name.trim() || 'SATOSHI NAKAMOTO').toUpperCase();
+  drawNamePlate(ctx, CANVAS_W / 2, currentY, 850, 130, displayName, theme, 52);
+  currentY += 130 + 26;
 
-  ctx.fillStyle = theme.id === 'white-sand' ? '#000000' : '#FFFFFF';
-  ctx.font = '800 48px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText(handleText, textX, cardY + 250);
-
-  ctx.fillStyle = theme.textColor;
-  ctx.font = '700 40px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText(`ORG: ${companyText.toUpperCase()}`, textX, cardY + 340);
-
-  ctx.fillStyle = theme.accentPink;
-  ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText(`CATEGORY: ${details.badgeType ? details.badgeType.toUpperCase() : 'BUILDER'}`, textX, cardY + 430);
-
-  ctx.fillStyle = theme.primaryYellow;
-  ctx.font = '700 28px "Courier New", monospace';
-  ctx.fillText(passIdText, textX, cardY + 520);
-
-  ctx.fillStyle = theme.id === 'white-sand' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)';
-  ctx.font = '700 26px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText('📷 SCAN QR CODE TO VERIFY CREDENTIALS', textX, cardY + 680);
-
-  ctx.restore();
-
-  // 10. Footer Bar
+  // 10. Role pill (title moves to the Builder Class footer column below)
+  const roleText = (details.role.trim() || 'FULLSTACK WEB3').toUpperCase();
   ctx.save();
-  ctx.strokeStyle = 'rgba(255, 235, 0, 0.4)';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(100, CANVAS_H - 160);
-  ctx.lineTo(CANVAS_H - 100, CANVAS_H - 160);
+  const pillW = 850;
+  const pillH = 100;
+  const pillX = (CANVAS_W - pillW) / 2;
+  ctx.fillStyle = theme.accentPink;
+  drawRoundedRect(ctx, pillX, currentY, pillW, pillH, 50);
+  ctx.fill();
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = `800 40px "Plus Jakarta Sans", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText(roleText, CANVAS_W / 2, currentY + 66);
+  ctx.restore();
+  currentY += pillH + 40;
+
+  // 11. Three-column footer detail card
+  const cardW = 1824;
+  const cardH = 650;
+  const cardX = (CANVAS_W - cardW) / 2;
+  const cardY = currentY;
+
+  ctx.save();
+  ctx.fillStyle = PAPER_COLOR;
+  drawRoundedRect(ctx, cardX, cardY, cardW, cardH, 40);
+  ctx.fill();
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = ink;
   ctx.stroke();
 
-  // Bottom Left: Yellow Grid Logo Icon
-  drawGridPixelLogo(ctx, 100, CANVAS_H - 130, 85, theme.primaryYellow, theme.bgColor);
+  const colW = cardW / 3;
 
-  // Bottom Center: #FrameInGoa
-  ctx.fillStyle = theme.primaryYellow;
-  ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
+  // Vertical dividers
+  ctx.strokeStyle = `${ink}66`;
+  ctx.lineWidth = 3;
+  ctx.setLineDash([8, 10]);
+  [1, 2].forEach((i) => {
+    ctx.beginPath();
+    ctx.moveTo(cardX + colW * i, cardY + 40);
+    ctx.lineTo(cardX + colW * i, cardY + cardH - 40);
+    ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  const colLabelFont = `800 32px "Plus Jakarta Sans", sans-serif`;
+
+  // Column 1: Builder Class + QR
+  const col1CX = cardX + colW * 0.5;
+  ctx.fillStyle = theme.accentPink;
   ctx.textAlign = 'center';
-  ctx.fillText('#FrameInGoa', CANVAS_W / 2, CANVAS_H - 75);
+  ctx.font = colLabelFont;
+  ctx.fillText('BUILDER CLASS', col1CX, cardY + 70);
 
-  // Bottom Right: GOA, INDIA · 28–31 OCT 2026
-  ctx.fillStyle = theme.textColor;
-  ctx.font = '700 32px "Plus Jakarta Sans", sans-serif';
-  ctx.textAlign = 'right';
-  ctx.fillText('GOA, INDIA · 28–31 OCT 2026', CANVAS_W - 100, CANVAS_H - 75);
+  const builderClass = (details.title.trim() || 'Terminal Wizard').toUpperCase();
+  ctx.fillStyle = ink;
+  ctx.font = `900 40px "Plus Jakarta Sans", sans-serif`;
+  wrapCenteredText(ctx, builderClass, col1CX, cardY + 130, colW - 60, 46);
+
+  if (details.showQrCode ?? true) {
+    const qrText = details.qrData?.trim() || 'https://x.com/HackerHouseGoa';
+    const qrSize = 320;
+    drawQRCodeGraphic(ctx, qrText, col1CX - qrSize / 2, cardY + 240, qrSize, ink, PAPER_COLOR, 24);
+  }
+
+  // Column 2: Beach Bag
+  const col2CX = cardX + colW * 1.5;
+  ctx.fillStyle = theme.accentPink;
+  ctx.font = colLabelFont;
+  ctx.fillText('BEACH BAG', col2CX, cardY + 70);
+
+  const filledBeachBag = (details.beachBag ?? []).map((v) => v.trim()).filter((v) => v !== '');
+  const beachBag = filledBeachBag.length > 0 ? filledBeachBag.slice(0, 3) : DEFAULT_BEACH_BAG;
+  ctx.textAlign = 'left';
+  const col2ItemX = cardX + colW * 1.12;
+  beachBag.forEach((item, i) => {
+    const iy = cardY + 160 + i * 90;
+    drawMiniPalm(ctx, cardX + colW * 1.08 - 6, iy - 12, 26, theme.accentPink, ink);
+    ctx.fillStyle = ink;
+    ctx.font = `700 34px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText(item, col2ItemX, iy);
+  });
+
+  // Column 3: Currently Shipping + barcode + Builder ID
+  const col3CX = cardX + colW * 2.5;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = theme.accentPink;
+  ctx.font = colLabelFont;
+  ctx.fillText('CURRENTLY SHIPPING', col3CX, cardY + 70);
+
+  const shippingText = (details.currentlyShipping?.trim() || 'BUILDING THE FUTURE').toUpperCase();
+  ctx.fillStyle = ink;
+  ctx.font = `900 38px "Plus Jakarta Sans", sans-serif`;
+  wrapCenteredText(ctx, shippingText, col3CX, cardY + 130, colW - 60, 44);
+
+  const builderId = generateBuilderId(details.handle || details.name || 'HHGOA2026');
+  const barcodeW = colW - 100;
+  const barcodeX = col3CX - barcodeW / 2;
+  drawBarcode(ctx, barcodeX, cardY + 300, barcodeW, 100, details.handle || details.name || 'HHGOA2026', ink);
+
+  ctx.fillStyle = ink;
+  ctx.font = `700 26px "Courier New", monospace`;
+  ctx.fillText(`BUILDER ID  ${builderId}`, col3CX, cardY + 440);
 
   ctx.restore();
+
+  // 12. Bottom ribbon
+  const ribbonW = 1600;
+  const ribbonH = 110;
+  drawFullRibbon(ctx, (CANVAS_W - ribbonW) / 2, CANVAS_H - 220, ribbonW, ribbonH, '#FRAMEINGOA', theme.accentPink, 46);
+
+  // 13. Footer credit line
+  ctx.save();
+  ctx.fillStyle = ink;
+  ctx.textAlign = 'center';
+  ctx.font = `700 28px "Plus Jakarta Sans", sans-serif`;
+  ctx.fillText('GOA, INDIA · 28–31 OCT 2026', CANVAS_W / 2, CANVAS_H - 76);
+  ctx.restore();
+}
+
+/** Center-aligned text wrapped across up to two lines within maxWidth */
+function wrapCenteredText(ctx: CanvasRenderingContext2D, text: string, cx: number, y: number, maxWidth: number, lineHeight: number) {
+  const words = text.split(' ');
+  const lines: string[] = [];
+  let line = '';
+
+  for (const word of words) {
+    const testLine = line ? `${line} ${word}` : word;
+    if (ctx.measureText(testLine).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = testLine;
+    }
+  }
+  if (line) lines.push(line);
+
+  const shown = lines.slice(0, 2);
+  ctx.textAlign = 'center';
+  shown.forEach((l, i) => {
+    ctx.fillText(l, cx, y + i * lineHeight);
+  });
 }
 
 /**
