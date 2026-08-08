@@ -20,6 +20,8 @@ const DEFAULT_DETAILS: UserDetails = {
   photoShape: 'circle',
   showQrCode: true,
   qrData: 'https://x.com/HackerHouseGoa',
+  currentlyShipping: 'Building the future',
+  beachBag: [],
 };
 
 export default function App() {
