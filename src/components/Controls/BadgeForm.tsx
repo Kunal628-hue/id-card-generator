@@ -1,7 +1,7 @@
 import React from 'react';
 import type { UserDetails, PhotoShape, BadgeType } from '../../types';
-import { BUILDER_TITLES } from '../../types';
-import { RefreshCw, Circle, Square, Hexagon, Shapes, QrCode, User, AtSign, Building2, ShieldCheck } from 'lucide-react';
+import { BUILDER_TITLES, DEFAULT_BEACH_BAG } from '../../types';
+import { RefreshCw, Circle, Square, Hexagon, Shapes, QrCode, User, AtSign, Building2, ShieldCheck, Package, Rocket } from 'lucide-react';
 
 interface BadgeFormProps {
   details: UserDetails;
@@ -179,6 +179,46 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
           onChange={(e) => handleChange('title', e.target.value)}
           className="mockup-input w-full py-3.5 px-4 text-sm font-semibold text-[#FFECA8] placeholder-emerald-200/50"
         />
+      </div>
+
+      {/* Postcard Extras: Currently Shipping & Beach Bag (Builder Pass footer) */}
+      <div className="border-t border-[#FFECA8]/20 pt-4 space-y-3">
+        <div>
+          <label className="block font-hh-display text-base tracking-wider text-[#FFECA8] mb-1.5 uppercase flex items-center gap-1.5">
+            <Rocket className="w-4 h-4 text-[#FF007A]" />
+            CURRENTLY SHIPPING
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. Building the future"
+            value={details.currentlyShipping ?? ''}
+            onChange={(e) => handleChange('currentlyShipping', e.target.value)}
+            className="mockup-input w-full py-3.5 px-4 text-sm font-semibold text-white placeholder-emerald-200/50"
+          />
+        </div>
+
+        <div>
+          <label className="block font-hh-display text-base tracking-wider text-[#FFECA8] mb-1.5 uppercase flex items-center gap-1.5">
+            <Package className="w-4 h-4 text-[#FF007A]" />
+            BEACH BAG (UP TO 3)
+          </label>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+            {[0, 1, 2].map((i) => (
+              <input
+                key={i}
+                type="text"
+                placeholder={DEFAULT_BEACH_BAG[i]}
+                value={details.beachBag?.[i] ?? ''}
+                onChange={(e) => {
+                  const next = [details.beachBag?.[0] ?? '', details.beachBag?.[1] ?? '', details.beachBag?.[2] ?? ''];
+                  next[i] = e.target.value;
+                  handleChange('beachBag', next);
+                }}
+                className="mockup-input w-full py-3 px-3 text-sm font-semibold text-white placeholder-emerald-200/50"
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* QR Code Section */}
