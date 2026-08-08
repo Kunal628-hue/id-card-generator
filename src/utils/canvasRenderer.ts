@@ -498,7 +498,7 @@ export function renderFormatB(
   ctx.textAlign = 'left';
   ctx.fillText('VERIFIED BUILDER PASS', textX, cardY + 160);
 
-  ctx.fillStyle = '#FFFFFF';
+  ctx.fillStyle = theme.id === 'white-sand' ? '#000000' : '#FFFFFF';
   ctx.font = '800 48px "Plus Jakarta Sans", sans-serif';
   ctx.fillText(handleText, textX, cardY + 250);
 
@@ -514,7 +514,7 @@ export function renderFormatB(
   ctx.font = '700 28px "Courier New", monospace';
   ctx.fillText(passIdText, textX, cardY + 520);
 
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+  ctx.fillStyle = theme.id === 'white-sand' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)';
   ctx.font = '700 26px "Plus Jakarta Sans", sans-serif';
   ctx.fillText('📷 SCAN QR CODE TO VERIFY CREDENTIALS', textX, cardY + 680);
 
