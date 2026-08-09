@@ -281,6 +281,203 @@ function drawWaveLine(ctx: CanvasRenderingContext2D, x: number, y: number, w: nu
   ctx.restore();
 }
 
+function drawFirework(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number, color1: string, color2: string) {
+  ctx.save();
+  ctx.lineWidth = Math.max(2, size * 0.05);
+  ctx.lineCap = 'round';
+  const rays = 12;
+  for (let i = 0; i < rays; i++) {
+    const angle = (Math.PI * 2 * i) / rays;
+    const isLong = i % 2 === 0;
+    const length = isLong ? size : size * 0.6;
+    const start = size * 0.2;
+    ctx.strokeStyle = isLong ? color1 : color2;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(angle) * start, cy + Math.sin(angle) * start);
+    ctx.lineTo(cx + Math.cos(angle) * length, cy + Math.sin(angle) * length);
+    ctx.stroke();
+    
+    if (isLong) {
+      ctx.fillStyle = color2;
+      ctx.beginPath();
+      ctx.arc(cx + Math.cos(angle) * (length + size * 0.15), cy + Math.sin(angle) * (length + size * 0.15), size * 0.08, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+function drawParachute(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number, canopyColor: string, stringColor: string) {
+  ctx.save();
+  ctx.fillStyle = canopyColor;
+  ctx.beginPath();
+  ctx.arc(cx, cy, size, Math.PI, 0);
+  const segments = 4;
+  const segW = (size * 2) / segments;
+  for (let i = segments; i > 0; i--) {
+    const xEnd = cx - size + (i - 1) * segW;
+    const xStart = cx - size + i * segW;
+    const midX = (xStart + xEnd) / 2;
+    ctx.quadraticCurveTo(midX, cy - size * 0.15, xEnd, cy);
+  }
+  ctx.fill();
+  
+  ctx.strokeStyle = stringColor;
+  ctx.lineWidth = Math.max(2, size * 0.05);
+  ctx.beginPath();
+  const basketY = cy + size * 1.5;
+  for (let i = 0; i <= segments; i++) {
+    const px = cx - size + i * segW;
+    ctx.moveTo(px, cy);
+    ctx.lineTo(cx, basketY);
+  }
+  ctx.stroke();
+
+  ctx.fillStyle = stringColor;
+  ctx.fillRect(cx - size * 0.15, basketY, size * 0.3, size * 0.2);
+  ctx.restore();
+}
+
+function drawSailboat(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number, sailColor: string, hullColor: string) {
+  ctx.save();
+  ctx.fillStyle = hullColor;
+  ctx.beginPath();
+  ctx.moveTo(cx - size * 0.8, cy);
+  ctx.lineTo(cx + size * 0.8, cy);
+  ctx.quadraticCurveTo(cx + size * 0.5, cy + size * 0.4, cx, cy + size * 0.4);
+  ctx.quadraticCurveTo(cx - size * 0.5, cy + size * 0.4, cx - size * 0.8, cy);
+  ctx.fill();
+  
+  ctx.strokeStyle = hullColor;
+  ctx.lineWidth = Math.max(2, size * 0.05);
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx, cy - size * 1.2);
+  ctx.stroke();
+  
+  ctx.fillStyle = sailColor;
+  ctx.beginPath();
+  ctx.moveTo(cx + size * 0.05, cy - size * 1.1);
+  ctx.lineTo(cx + size * 0.7, cy - size * 0.1);
+  ctx.lineTo(cx + size * 0.05, cy - size * 0.1);
+  ctx.closePath();
+  ctx.fill();
+  
+  ctx.beginPath();
+  ctx.moveTo(cx - size * 0.05, cy - size * 1.0);
+  ctx.lineTo(cx - size * 0.5, cy - size * 0.1);
+  ctx.lineTo(cx - size * 0.05, cy - size * 0.1);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawSurfboard(ctx: CanvasRenderingContext2D, cx: number, cy: number, length: number, angle: number, mainColor: string, stripeColor: string) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+  const width = length * 0.25;
+  
+  ctx.fillStyle = mainColor;
+  ctx.beginPath();
+  ctx.moveTo(0, -length / 2);
+  ctx.bezierCurveTo(width / 2, -length / 4, width / 2, length / 4, 0, length / 2);
+  ctx.bezierCurveTo(-width / 2, length / 4, -width / 2, -length / 4, 0, -length / 2);
+  ctx.fill();
+  
+  ctx.fillStyle = stripeColor;
+  ctx.beginPath();
+  ctx.moveTo(-width * 0.15, -length * 0.45);
+  ctx.lineTo(width * 0.15, -length * 0.45);
+  ctx.lineTo(width * 0.15, length * 0.45);
+  ctx.lineTo(-width * 0.15, length * 0.45);
+  ctx.closePath();
+  ctx.fill();
+  
+  ctx.strokeStyle = stripeColor;
+  ctx.lineWidth = Math.max(2, length * 0.02);
+  ctx.beginPath();
+  ctx.bezierCurveTo(width / 2, -length / 4, width / 2, length / 4, 0, length / 2);
+  ctx.bezierCurveTo(-width / 2, length / 4, -width / 2, -length / 4, 0, -length / 2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawBunting(ctx: CanvasRenderingContext2D, startX: number, startY: number, endX: number, endY: number, count: number, color1: string, color2: string) {
+  ctx.save();
+  ctx.strokeStyle = color2;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(startX, startY);
+  const ctrlX = (startX + endX) / 2;
+  const ctrlY = (startY + endY) / 2 + 30;
+  ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
+  ctx.stroke();
+  
+  for (let i = 1; i <= count; i++) {
+    const t = i / (count + 1);
+    const u = 1 - t;
+    const px = u * u * startX + 2 * u * t * ctrlX + t * t * endX;
+    const py = u * u * startY + 2 * u * t * ctrlY + t * t * endY;
+    
+    const dx = 2 * (1 - t) * (ctrlX - startX) + 2 * t * (endX - ctrlX);
+    const dy = 2 * (1 - t) * (ctrlY - startY) + 2 * t * (endY - ctrlY);
+    const angle = Math.atan2(dy, dx);
+    
+    ctx.save();
+    ctx.translate(px, py);
+    ctx.rotate(angle);
+    ctx.fillStyle = i % 2 === 0 ? color1 : color2;
+    const flagW = 24;
+    const flagH = 32;
+    ctx.beginPath();
+    ctx.moveTo(-flagW/2, 0);
+    ctx.lineTo(flagW/2, 0);
+    ctx.lineTo(0, flagH);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+function drawSun(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number, coreColor: string, rayColor: string, isHalf: boolean = false) {
+  ctx.save();
+  ctx.fillStyle = coreColor;
+  ctx.beginPath();
+  if (isHalf) {
+    ctx.arc(cx, cy, size * 0.5, Math.PI, 0);
+  } else {
+    ctx.arc(cx, cy, size * 0.5, 0, Math.PI * 2);
+  }
+  ctx.fill();
+  
+  ctx.strokeStyle = rayColor;
+  ctx.lineWidth = Math.max(2, size * 0.08);
+  ctx.lineCap = 'round';
+  const rays = isHalf ? 7 : 12;
+  const startAngle = isHalf ? Math.PI : 0;
+  const angleRange = isHalf ? Math.PI : Math.PI * 2;
+  for (let i = 0; i <= rays; i++) {
+    const angle = startAngle + (angleRange * i) / rays;
+    if (!isHalf && i === rays) continue;
+    const rayDistStart = size * 0.65;
+    const rayDistEnd = size * 0.95;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(angle) * rayDistStart, cy + Math.sin(angle) * rayDistStart);
+    ctx.lineTo(cx + Math.cos(angle) * rayDistEnd, cy + Math.sin(angle) * rayDistEnd);
+    ctx.stroke();
+  }
+  if (isHalf) {
+    ctx.strokeStyle = coreColor;
+    ctx.beginPath();
+    ctx.moveTo(cx - size * 0.6, cy);
+    ctx.lineTo(cx + size * 0.6, cy);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
 /** Perforated-edge postage stamp with a tiny beach scene */
 function drawPostageStamp(
   ctx: CanvasRenderingContext2D,
@@ -799,11 +996,32 @@ export function renderFormatA(
   ctx.fillText(`${roleText} · ${titleText}`, CANVAS_SIZE / 2, pillY + 70);
   ctx.restore();
 
-  // 9. Scattered doodles
-  drawSparkle(ctx, 160, 1720, 26, theme.primaryYellow);
-  drawBirdMark(ctx, 1780, 500, 30, ink);
-  drawBirdMark(ctx, 1840, 560, 22, ink);
+  // 9. Scattered doodles (Festival Vibe)
+  drawBunting(ctx, 56, 56, CANVAS_SIZE / 2 - 200, 56, 5, theme.accentPink, theme.primaryYellow);
+  drawBunting(ctx, CANVAS_SIZE / 2 + 200, 56, CANVAS_SIZE - 56, 56, 5, theme.primaryYellow, theme.accentPink);
+  
+  drawFirework(ctx, 250, 750, 120, theme.accentPink, theme.primaryYellow);
+  drawFirework(ctx, 1750, 850, 130, theme.primaryYellow, theme.accentPink);
+  
+  drawParachute(ctx, 300, 480, 80, theme.primaryYellow, ink);
+  drawParachute(ctx, 1750, 520, 70, theme.accentPink, ink);
+  
+  drawSun(ctx, 280, 1680, 160, theme.primaryYellow, theme.accentPink, false);
+  drawSailboat(ctx, 500, 1800, 100, theme.accentPink, ink);
+  drawSurfboard(ctx, 1750, 1300, 240, Math.PI / 6, theme.primaryYellow, theme.accentPink);
+  
+  drawSparkle(ctx, 200, 1400, 40, theme.primaryYellow);
+  drawSparkle(ctx, 1800, 1100, 50, theme.accentPink);
+  
+  drawBirdMark(ctx, 1700, 500, 40, ink);
+  drawBirdMark(ctx, 1760, 540, 30, ink);
+  drawBirdMark(ctx, 350, 1000, 45, ink);
+  
   drawWaveLine(ctx, 130, 1860, 300, ink);
+  drawWaveLine(ctx, 380, 1840, 200, ink);
+  
+  drawMiniPalm(ctx, 250, 1200, 120, theme.accentPink, ink);
+  drawMiniPalm(ctx, 1800, 1620, 120, theme.primaryYellow, ink);
 
   // 10. QR Code (bottom-right)
   if (details.showQrCode ?? true) {
@@ -912,7 +1130,33 @@ export function renderFormatB(
 
   // 8. Signpost (left) & beach house scene (right), flanking the photo/name column
   drawSignpost(ctx, 260, 700, 560, theme);
+  
+  // Draw the sun behind the beach house
+  drawSun(ctx, 1670, 720, 200, theme.primaryYellow, theme.accentPink, true);
+  
   drawBeachHouseScene(ctx, 1440, 680, 460, 640, theme);
+
+  // Festival Vibes for Badge
+  drawBunting(ctx, 48, 48, CANVAS_W / 2 - 200, 48, 4, theme.primaryYellow, theme.accentPink);
+  drawBunting(ctx, CANVAS_W / 2 + 200, 48, CANVAS_W - 48, 48, 4, theme.accentPink, theme.primaryYellow);
+  
+  // Accurately placed in the empty sky above the signpost
+  drawFirework(ctx, 320, 520, 80, theme.primaryYellow, theme.accentPink);
+  drawParachute(ctx, 160, 480, 60, theme.primaryYellow, ink);
+  
+  // Accurately placed in the empty sky above the beach house
+  drawFirework(ctx, 1750, 440, 80, theme.accentPink, theme.primaryYellow);
+
+  // Safely tucked on the far left side below the stamp
+  drawSurfboard(ctx, 150, 1200, 220, Math.PI / 16, theme.primaryYellow, theme.accentPink);
+  drawMiniPalm(ctx, 160, 1550, 120, theme.accentPink, ink);
+  
+  // Safely tucked on the right side below the beach house
+  drawSparkle(ctx, 400, 1450, 40, theme.primaryYellow);
+  drawSparkle(ctx, 1550, 1450, 50, theme.accentPink);
+
+  drawBirdMark(ctx, 1550, 480, 40, ink);
+  drawBirdMark(ctx, 1620, 520, 30, ink);
 
   // 9. Name plate
   let currentY = photoY + photoSize + 50;
@@ -1017,11 +1261,11 @@ export function renderFormatB(
   const builderId = generateBuilderId(details.handle || details.name || 'HHGOA2026');
   const barcodeW = colW - 100;
   const barcodeX = col3CX - barcodeW / 2;
-  drawBarcode(ctx, barcodeX, cardY + 300, barcodeW, 100, details.handle || details.name || 'HHGOA2026', ink);
+  drawBarcode(ctx, barcodeX, cardY + 310, barcodeW, 80, details.handle || details.name || 'HHGOA2026', ink);
 
   ctx.fillStyle = ink;
   ctx.font = `700 26px "Courier New", monospace`;
-  ctx.fillText(`BUILDER ID  ${builderId}`, col3CX, cardY + 440);
+  ctx.fillText(`BUILDER ID  ${builderId}`, col3CX, cardY + 450);
 
   ctx.restore();
 
