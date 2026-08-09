@@ -410,6 +410,42 @@ function drawFullRibbon(
 }
 
 /** Circular seal/stamp badge with two lines of caption text */
+function drawTextAlongArc(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  cx: number,
+  cy: number,
+  radius: number,
+  startAngle: number,
+  isBottom: boolean = false
+) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  const textWidth = ctx.measureText(text).width;
+  const totalAngle = textWidth / radius;
+  
+  if (isBottom) {
+    ctx.rotate(startAngle + totalAngle / 2);
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      const charWidth = ctx.measureText(char).width;
+      ctx.rotate(-charWidth / (2 * radius));
+      ctx.fillText(char, 0, radius);
+      ctx.rotate(-charWidth / (2 * radius));
+    }
+  } else {
+    ctx.rotate(startAngle - totalAngle / 2);
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      const charWidth = ctx.measureText(char).width;
+      ctx.rotate(charWidth / (2 * radius));
+      ctx.fillText(char, 0, -radius);
+      ctx.rotate(charWidth / (2 * radius));
+    }
+  }
+  ctx.restore();
+}
+
 function drawCircularSeal(
   ctx: CanvasRenderingContext2D,
   cx: number,
@@ -442,9 +478,10 @@ function drawCircularSeal(
 
   ctx.fillStyle = ink;
   ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
   ctx.font = `800 ${Math.round(r * 0.13)}px "Plus Jakarta Sans", sans-serif`;
-  if (lines[0]) ctx.fillText(lines[0], cx, cy - r * 0.68);
-  if (lines[1]) ctx.fillText(lines[1], cx, cy + r * 0.82);
+  if (lines[0]) drawTextAlongArc(ctx, lines[0], cx, cy, r - 26, 0, false);
+  if (lines[1]) drawTextAlongArc(ctx, lines[1], cx, cy, r - 26, 0, true);
   ctx.restore();
 }
 
