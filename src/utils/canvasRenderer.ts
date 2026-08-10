@@ -1282,12 +1282,12 @@ export function renderFormatA(
   drawHangingTag(ctx, CANVAS_SIZE / 2, 18, 350, 125, ['HH GOA 2026', "LET'S BUILD"], ink);
 
   // 5. Title & Subtitle with balanced spacing
-  drawPostcardTitle(ctx, CANVAS_SIZE / 2, 475, theme, 104);
+  drawPostcardTitle(ctx, CANVAS_SIZE / 2, 425, theme, 104);
   ctx.save();
   ctx.fillStyle = theme.accentPink;
   ctx.textAlign = 'center';
   ctx.font = `800 32px "Plus Jakarta Sans", sans-serif`;
-  ctx.fillText('✦ #FRAMEINGOA · GOA, INDIA ✦', CANVAS_SIZE / 2, 528);
+  ctx.fillText('✦ #FRAMEINGOA · GOA, INDIA ✦', CANVAS_SIZE / 2, 478);
   ctx.restore();
 
   // 6. Center Photo Frame
@@ -1440,12 +1440,13 @@ export function renderFormatB(
   drawHangingTag(ctx, CANVAS_W / 2, 18, 340, 125, ['HH GOA 2026', `${badgeTypeLabel} PASS`], ink);
 
   // 6. Title
-  drawPostcardTitle(ctx, CANVAS_W / 2, 435, theme, 96);
+  // 6. Title
+  drawPostcardTitle(ctx, CANVAS_W / 2, 385, theme, 96);
   ctx.save();
   ctx.fillStyle = theme.accentPink;
   ctx.textAlign = 'center';
   ctx.font = `800 30px "Plus Jakarta Sans", sans-serif`;
-  ctx.fillText(`✦ OFFICIAL ${badgeTypeLabel} PASS · GOA 2026 ✦`, CANVAS_W / 2, 484);
+  ctx.fillText(`✦ OFFICIAL ${badgeTypeLabel} PASS · GOA 2026 ✦`, CANVAS_W / 2, 434);
   ctx.restore();
 
   // 7. Center Photo Area
