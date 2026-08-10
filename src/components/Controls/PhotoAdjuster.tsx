@@ -49,7 +49,7 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
   ];
 
   return (
-    <div className="bg-[#005632] border border-[#FFECA8]/40 p-4 md:p-5 rounded-xl space-y-4 shadow-md">
+    <div className="bg-black/40 border border-[#FFECA8]/40 p-4 md:p-5 rounded-xl space-y-4 shadow-xl backdrop-blur-sm">
       
       {/* Header Bar */}
       <div className="flex items-center justify-between border-b border-[#FFECA8]/20 pb-3">
@@ -69,7 +69,7 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
 
       {/* Photo Frame Shape Selector Row */}
       <div className="space-y-1.5 border-b border-[#FFECA8]/20 pb-3">
-        <label className="text-xs text-white font-bold flex items-center gap-1.5">
+        <label className="text-xs text-white font-bold flex items-center gap-1.5 uppercase">
           <Shapes className="w-3.5 h-3.5 text-[#FF007A]" />
           PHOTO FRAME SHAPE
         </label>
@@ -84,7 +84,7 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
                 className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   isSelected
                     ? 'bg-[#FFECA8] text-black shadow-md border border-[#FFECA8]'
-                    : 'bg-[#006B3E] text-white hover:bg-[#007D48] border border-[#FFECA8]/20'
+                    : 'bg-black/30 text-white hover:bg-black/50 border border-[#FFECA8]/20'
                 }`}
               >
                 {item.icon}
@@ -111,7 +111,7 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
             <button
               type="button"
               onClick={() => updateField('zoom', Math.max(0.5, transform.zoom - 0.1))}
-              className="p-1.5 rounded-lg bg-[#006B3E] text-white hover:bg-[#007D48] text-xs font-bold border border-[#FFECA8]/20 cursor-pointer"
+              className="p-1.5 rounded-lg bg-black/40 text-white hover:bg-black/60 text-xs font-bold border border-[#FFECA8]/20 cursor-pointer"
             >
               <ZoomOut className="w-3.5 h-3.5 text-[#FFECA8]" />
             </button>
@@ -122,12 +122,12 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
               step="0.05"
               value={transform.zoom}
               onChange={(e) => updateField('zoom', parseFloat(e.target.value))}
-              className="w-full accent-[#FFECA8] bg-[#004729] h-2 rounded-lg cursor-pointer"
+              className="w-full accent-[#FFECA8] bg-black/50 h-2 rounded-lg cursor-pointer"
             />
             <button
               type="button"
               onClick={() => updateField('zoom', Math.min(3, transform.zoom + 0.1))}
-              className="p-1.5 rounded-lg bg-[#006B3E] text-white hover:bg-[#007D48] text-xs font-bold border border-[#FFECA8]/20 cursor-pointer"
+              className="p-1.5 rounded-lg bg-black/40 text-white hover:bg-black/60 text-xs font-bold border border-[#FFECA8]/20 cursor-pointer"
             >
               <ZoomIn className="w-3.5 h-3.5 text-[#FFECA8]" />
             </button>
@@ -144,7 +144,7 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
             <button
               type="button"
               onClick={handleRotate90}
-              className="w-full py-1.5 px-3 bg-[#006B3E] hover:bg-[#007D48] text-[#FFECA8] rounded-lg text-xs font-bold transition-all border border-[#FFECA8]/30 flex items-center justify-center gap-1.5 cursor-pointer"
+              className="w-full py-1.5 px-3 bg-black/40 hover:bg-black/60 text-[#FFECA8] rounded-lg text-xs font-bold transition-all border border-[#FFECA8]/30 flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <RotateCw className="w-3.5 h-3.5 text-[#FF007A]" />
               <span>Rotate 90°</span>
@@ -168,7 +168,7 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
             step="1"
             value={transform.brightness}
             onChange={(e) => updateField('brightness', parseInt(e.target.value))}
-            className="w-full accent-[#FFECA8] bg-[#004729] h-2 rounded-lg cursor-pointer"
+            className="w-full accent-[#FFECA8] bg-black/50 h-2 rounded-lg cursor-pointer"
           />
         </div>
 
@@ -188,7 +188,7 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
             step="1"
             value={transform.contrast}
             onChange={(e) => updateField('contrast', parseInt(e.target.value))}
-            className="w-full accent-[#FFECA8] bg-[#004729] h-2 rounded-lg cursor-pointer"
+            className="w-full accent-[#FFECA8] bg-black/50 h-2 rounded-lg cursor-pointer"
           />
         </div>
 
@@ -208,7 +208,7 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
             step="5"
             value={transform.x}
             onChange={(e) => updateField('x', parseInt(e.target.value))}
-            className="w-full accent-[#FFECA8] bg-[#004729] h-2 rounded-lg cursor-pointer"
+            className="w-full accent-[#FFECA8] bg-black/50 h-2 rounded-lg cursor-pointer"
           />
         </div>
 
@@ -228,7 +228,7 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
             step="5"
             value={transform.y}
             onChange={(e) => updateField('y', parseInt(e.target.value))}
-            className="w-full accent-[#FFECA8] bg-[#004729] h-2 rounded-lg cursor-pointer"
+            className="w-full accent-[#FFECA8] bg-black/50 h-2 rounded-lg cursor-pointer"
           />
         </div>
 
@@ -247,7 +247,7 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
             className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
               transform.saturation === 100
                 ? 'bg-[#FFECA8] text-black shadow-sm'
-                : 'bg-[#006B3E] text-white hover:bg-[#007D48] border border-[#FFECA8]/20'
+                : 'bg-black/40 text-white hover:bg-black/60 border border-[#FFECA8]/20'
             }`}
           >
             Full Color
@@ -258,7 +258,7 @@ export const PhotoAdjuster: React.FC<PhotoAdjusterProps> = ({
             className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
               transform.saturation === 0
                 ? 'bg-[#FF007A] text-white shadow-sm'
-                : 'bg-[#006B3E] text-white hover:bg-[#007D48] border border-[#FFECA8]/20'
+                : 'bg-black/40 text-white hover:bg-black/60 border border-[#FFECA8]/20'
             }`}
           >
             Vintage B&W

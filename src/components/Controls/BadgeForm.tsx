@@ -58,7 +58,7 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
                 className={`flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   isSelected
                     ? 'bg-[#FFECA8] text-black shadow-md border border-[#FFECA8]'
-                    : 'bg-[#004D2D] text-white hover:bg-[#005632] border border-[#FFECA8]/30'
+                    : 'bg-black/30 text-white hover:bg-black/50 border border-[#FFECA8]/30'
                 }`}
               >
                 {item.icon}
@@ -86,7 +86,7 @@ export const BadgeForm: React.FC<BadgeFormProps> = ({
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   isSelected
                     ? 'bg-[#FF007A] text-white shadow-md'
-                    : 'bg-[#004D2D] text-slate-200 hover:bg-[#005632] border border-[#FFECA8]/20'
+                    : 'bg-black/30 text-slate-200 hover:bg-black/50 border border-[#FFECA8]/20'
                 }`}
               >
                 {type}

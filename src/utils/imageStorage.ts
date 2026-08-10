@@ -4,34 +4,107 @@ const DETAILS_KEY = 'hh_id_card_saved_details';
 /**
  * Creates default sample demo avatar
  */
+/**
+ * Creates default sample demo avatar (Tropical Goa Beach Hacker)
+ */
 export function createSampleAvatarImage(): Promise<HTMLImageElement> {
   return new Promise((resolve) => {
     const canvas = document.createElement('canvas');
-    canvas.width = 800;
-    canvas.height = 800;
+    canvas.width = 1000;
+    canvas.height = 1000;
     const ctx = canvas.getContext('2d');
     if (ctx) {
-      // Emerald background
-      ctx.fillStyle = '#005833';
-      ctx.fillRect(0, 0, 800, 800);
+      // 1. Goa Sunset Gradient background
+      const grad = ctx.createLinearGradient(0, 0, 0, 1000);
+      grad.addColorStop(0, '#FFECA8');
+      grad.addColorStop(0.35, '#FF70A6');
+      grad.addColorStop(0.7, '#FF007A');
+      grad.addColorStop(1, '#004D2D');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1000, 1000);
 
-      // Yellow head
-      ctx.fillStyle = '#FFECA8';
+      // 2. Setting Sun Disk
+      ctx.fillStyle = '#FFEB00';
       ctx.beginPath();
-      ctx.arc(400, 320, 140, 0, Math.PI * 2);
+      ctx.arc(500, 480, 260, 0, Math.PI * 2);
       ctx.fill();
 
-      // Glasses
-      ctx.fillStyle = '#006B3E';
-      ctx.fillRect(290, 290, 95, 55);
-      ctx.fillRect(415, 290, 95, 55);
-      ctx.fillRect(380, 310, 40, 15);
+      // 3. Ocean reflection water
+      ctx.fillStyle = '#004D2D';
+      ctx.fillRect(0, 700, 1000, 300);
 
-      // Body
-      ctx.fillStyle = '#FFECA8';
+      ctx.strokeStyle = '#FFEB00';
+      ctx.lineWidth = 4;
       ctx.beginPath();
-      ctx.ellipse(400, 720, 240, 220, 0, 0, Math.PI * 2);
+      ctx.moveTo(300, 740); ctx.lineTo(700, 740);
+      ctx.moveTo(350, 780); ctx.lineTo(650, 780);
+      ctx.moveTo(400, 820); ctx.lineTo(600, 820);
+      ctx.stroke();
+
+      // 4. Palm trees framing sides
+      // Left palm
+      ctx.strokeStyle = '#002B19';
+      ctx.lineWidth = 22;
+      ctx.beginPath();
+      ctx.moveTo(100, 900);
+      ctx.quadraticCurveTo(220, 500, 120, 200);
+      ctx.stroke();
+
+      ctx.fillStyle = '#003820';
+      for (let i = 0; i < 5; i++) {
+        const angle = -Math.PI / 2 + (i - 2) * 0.5;
+        ctx.beginPath();
+        ctx.arc(120 + Math.cos(angle) * 120, 200 + Math.sin(angle) * 120, 60, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Right palm
+      ctx.strokeStyle = '#002B19';
+      ctx.lineWidth = 22;
+      ctx.beginPath();
+      ctx.moveTo(900, 900);
+      ctx.quadraticCurveTo(780, 500, 880, 200);
+      ctx.stroke();
+
+      ctx.fillStyle = '#003820';
+      for (let i = 0; i < 5; i++) {
+        const angle = -Math.PI / 2 + (i - 2) * 0.5;
+        ctx.beginPath();
+        ctx.arc(880 + Math.cos(angle) * 120, 200 + Math.sin(angle) * 120, 60, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 5. Goa Hacker Avatar Silhouette with sunglasses
+      ctx.fillStyle = '#002B19';
+      // Head
+      ctx.beginPath();
+      ctx.arc(500, 420, 150, 0, Math.PI * 2);
       ctx.fill();
+
+      // Shoulders
+      ctx.beginPath();
+      ctx.ellipse(500, 820, 260, 220, 0, Math.PI, 0);
+      ctx.fill();
+
+      // Cool pink/yellow beach sunglasses
+      ctx.fillStyle = '#FF007A';
+      ctx.beginPath();
+      ctx.roundRect(380, 390, 105, 55, 12);
+      ctx.roundRect(515, 390, 105, 55, 12);
+      ctx.fill();
+      ctx.fillRect(475, 410, 50, 14);
+
+      ctx.fillStyle = '#FFEB00';
+      ctx.beginPath();
+      ctx.arc(410, 415, 15, 0, Math.PI * 2);
+      ctx.arc(545, 415, 15, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Watermark text
+      ctx.fillStyle = '#FFFFFF';
+      ctx.textAlign = 'center';
+      ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('🌴 GOA BEACH HACKER 🌴', 500, 940);
     }
     const img = new Image();
     img.onload = () => resolve(img);

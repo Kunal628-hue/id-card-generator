@@ -142,13 +142,14 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleMouseUp}
-        className={`relative w-full rounded-2xl p-1 bg-[#006B3E] border-2 border-[#FFECA8]/40 shadow-2xl overflow-hidden select-none transition-all ${
+        className={`relative w-full rounded-2xl p-1.5 border-2 border-[#FFECA8]/50 shadow-2xl overflow-hidden select-none transition-all duration-300 ${
           activeFormat === 'formatA' ? 'max-w-[500px] aspect-square' : 'max-w-[460px] aspect-[1/1.4]'
         } ${image ? 'cursor-grab active:cursor-grabbing' : ''}`}
+        style={{ backgroundColor: theme.bgColor }}
       >
         <canvas
           ref={canvasRef}
-          className="w-full h-full object-fill rounded-xl bg-[#006B3E]"
+          className="w-full h-full object-fill rounded-xl shadow-inner"
         />
       </div>
 

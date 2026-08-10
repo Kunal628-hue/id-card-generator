@@ -94,10 +94,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         onClick={() => fileInputRef.current?.click()}
         className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${
           isDragging
-            ? 'border-[#FFECA8] bg-[#FFECA8]/10'
+            ? 'border-[#FFECA8] bg-[#FFECA8]/20'
             : hasImage
-            ? 'border-[#FFECA8]/80 bg-[#005833]/60'
-            : 'border-[#FFECA8]/60 bg-transparent hover:border-[#FFECA8] hover:bg-[#005833]/30'
+            ? 'border-[#FFECA8]/80 bg-black/40'
+            : 'border-[#FFECA8]/60 bg-black/25 hover:border-[#FFECA8] hover:bg-black/40'
         }`}
       >
         <div className="flex flex-col items-center justify-center gap-3">

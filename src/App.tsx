@@ -9,6 +9,7 @@ import { BadgeForm } from './components/Controls/BadgeForm';
 import { ThemePicker } from './components/Controls/ThemePicker';
 import { CanvasPreview } from './components/CanvasPreview';
 import { loadSavedImage, saveImageToStorage, loadSavedDetails, saveDetailsToStorage } from './utils/imageStorage';
+import { Sun, Palmtree, Waves, Sparkles } from 'lucide-react';
 
 const DEFAULT_DETAILS: UserDetails = {
   name: 'Satoshi Nakamoto',
@@ -21,7 +22,7 @@ const DEFAULT_DETAILS: UserDetails = {
   showQrCode: true,
   qrData: 'https://x.com/HackerHouseGoa',
   currentlyShipping: 'Building the future',
-  beachBag: [],
+  beachBag: ['Coconut Water', 'VS Code', 'Lo-Fi Beats'],
 };
 
 export default function App() {
@@ -73,25 +74,38 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#006B3E] text-white flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
+    <div
+      className="min-h-screen text-white flex flex-col font-['Plus_Jakarta_Sans',sans-serif] transition-colors duration-500 relative overflow-x-hidden"
+      style={{ backgroundColor: theme.bgColor }}
+    >
+      {/* Dynamic Background Tropical Glow & Decorative Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-20 z-0">
+        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#FFEB00] blur-3xl" />
+        <div className="absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-[#FF007A] blur-3xl" />
+        <div className="absolute bottom-10 left-1/4 w-[600px] h-[600px] rounded-full bg-[#00A896] blur-3xl" />
+      </div>
+
       {/* Top Navigation Header */}
       <Header />
 
       {/* Main Page Layout */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8 md:py-10 space-y-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8 md:py-10 space-y-8 z-10 relative">
         
         {/* Hero Header Section */}
-        <div className="space-y-3">
-          <div className="inline-block border border-[#FFECA8]/60 px-3 py-1 text-xs font-mono font-bold tracking-wider text-[#FFECA8] rounded uppercase">
-            OFFICIAL TOOL
+        <div className="space-y-3 text-center md:text-left">
+          <div className="inline-flex items-center gap-2 border border-[#FFECA8]/60 px-3.5 py-1 text-xs font-mono font-bold tracking-wider text-[#FFECA8] rounded-full uppercase bg-black/30 backdrop-blur-sm">
+            <Sun className="w-3.5 h-3.5 text-[#FFEB00]" />
+            <span>OFFICIAL GOA 2026 BUILDER SUITE</span>
+            <Waves className="w-3.5 h-3.5 text-[#38BDF8]" />
           </div>
 
-          <h1 className="font-hh-display text-5xl md:text-7xl font-extrabold tracking-wide text-[#FFECA8] leading-none uppercase">
-            MAKE YOUR GOA 2026 FRAME
+          <h1 className="font-hh-display text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-wide text-[#FFECA8] leading-none uppercase drop-shadow-md">
+            MAKE YOUR GOA 2026 FRAME & BADGE
           </h1>
 
-          <p className="text-base md:text-lg text-slate-100 font-medium">
-            Join the tribe. Generate your official social media profile frame or builder badge.
+          <p className="text-base md:text-xl text-slate-100 font-medium max-w-3xl flex items-center justify-center md:justify-start gap-2">
+            <Palmtree className="w-5 h-5 text-[#FF007A] hidden sm:inline" />
+            Join the tribe. Generate your official social media profile frame or builder pass for Hacker House Goa 2026.
           </p>
         </div>
 
@@ -100,10 +114,16 @@ export default function App() {
           
           {/* Left Column: CONFIGURATION Card */}
           <div className="lg:col-span-6 space-y-6">
-            <div className="mockup-card p-6 md:p-8 space-y-6">
-              <h2 className="font-hh-display text-3xl tracking-wider text-white uppercase">
-                CONFIGURATION
-              </h2>
+            <div className="mockup-card p-6 md:p-8 space-y-6 shadow-2xl backdrop-blur-md border-2 border-[#FFECA8]/40" style={{ backgroundColor: `${theme.cardBg}E6` }}>
+              <div className="flex items-center justify-between border-b border-[#FFECA8]/20 pb-4">
+                <h2 className="font-hh-display text-3xl tracking-wider text-white uppercase flex items-center gap-2">
+                  <Sparkles className="w-6 h-6 text-[#FF007A]" />
+                  CONFIGURATION
+                </h2>
+                <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-[#FF007A] text-white uppercase">
+                  {theme.name}
+                </span>
+              </div>
 
               {/* Segmented Format Selector Tabs */}
               <FormatSelector
@@ -137,7 +157,6 @@ export default function App() {
                 </div>
               )}
 
-
               {/* Form Inputs */}
               <div className="border-t border-[#FFECA8]/20 pt-4">
                 <BadgeForm
@@ -150,10 +169,16 @@ export default function App() {
 
           {/* Right Column: LIVE PREVIEW Card */}
           <div className="lg:col-span-6 space-y-6">
-            <div className="mockup-card p-6 md:p-8 space-y-6">
-              <h2 className="font-hh-display text-3xl tracking-wider text-white uppercase">
-                LIVE PREVIEW
-              </h2>
+            <div className="mockup-card p-6 md:p-8 space-y-6 shadow-2xl backdrop-blur-md border-2 border-[#FFECA8]/40" style={{ backgroundColor: `${theme.cardBg}E6` }}>
+              <div className="flex items-center justify-between border-b border-[#FFECA8]/20 pb-4">
+                <h2 className="font-hh-display text-3xl tracking-wider text-white uppercase flex items-center gap-2">
+                  <Sun className="w-6 h-6 text-[#FFEB00]" />
+                  LIVE PREVIEW
+                </h2>
+                <span className="text-xs font-mono font-bold text-[#FFECA8]">
+                  {activeFormat === 'formatA' ? '2000 x 2000px · Profile Frame' : '2000 x 2800px · Builder Pass'}
+                </span>
+              </div>
 
               {/* Canvas Preview & Buttons */}
               <CanvasPreview
@@ -171,10 +196,15 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#0B0B0B] py-6 px-4 border-t border-white/10 text-xs font-mono text-slate-300">
+      <footer className="bg-[#0B0B0B] py-8 px-4 border-t border-white/10 text-xs font-mono text-slate-300 z-10 relative">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="font-hh-display text-2xl tracking-wider text-[#FFB3D9] uppercase">
-            HACKER HOUSE GOA
+          <div className="flex items-center gap-3">
+            <span className="font-hh-display text-2xl tracking-wider text-[#FFB3D9] uppercase">
+              HACKER <span className="text-[#FF007A]">गोवा</span> HOUSE 2026
+            </span>
+            <span className="text-[10px] font-bold bg-[#FFEB00] text-black px-2 py-0.5 rounded">
+              GOA, INDIA
+            </span>
           </div>
 
           <div className="text-center text-slate-400">
@@ -182,8 +212,8 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-6 text-slate-400 font-sans font-medium">
+            <a href="https://x.com/HackerHouseGoa" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">TWITTER / X</a>
             <a href="#" className="hover:text-white transition-colors">PRIVACY</a>
-            <a href="#" className="hover:text-white transition-colors">TERMS</a>
             <a href="#" className="hover:text-white transition-colors">SUPPORT</a>
           </div>
         </div>
