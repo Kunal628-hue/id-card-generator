@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { ActiveFormat, UserDetails, ImageTransform, PresetTheme } from '../types';
 import { renderFormatA, renderFormatB } from '../utils/canvasRenderer';
-import { Download, Share2, Check } from 'lucide-react';
+import { Download, Share2, Check, RefreshCw, MessageSquare } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface CanvasPreviewProps {
@@ -25,6 +25,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
+  const [tweetPresetIndex, setTweetPresetIndex] = useState(0);
   const dragStartRef = useRef<{ x: number; y: number; initialX: number; initialY: number } | null>(null);
 
   useEffect(() => {
@@ -120,13 +121,17 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
     }
   };
 
+  const tweetOptions = [
+    `Just generated my official @HackerHouseGoa ${activeFormat === 'formatA' ? 'profile frame' : 'builder pass'}! 🌴\n\nRole: ${details.role || 'Web3 Builder'} | ${details.title || 'Protocol Engineer'}\nBuilding the future on the beaches of Goa this Oct 28–31. 🚀\n\n#FrameInGoa #HHGoa2026 #BuildInGoa`,
+    `Goa is calling! ☀️ Coconut water in hand, code on screen. 🌴\n\nClaimed my official @HackerHouseGoa 2026 pass as a ${details.title || 'Builder'}.\nSee you all on the beaches of paradise! 🚀\n\n#FrameInGoa #Goa2026 #Web3`,
+    `Build on the beach, ship from paradise. 🌴💻\n\nJust created my official @HackerHouseGoa pass!\nExcited to connect with Web3 builders in Goa this October. ✨\n\n#FrameInGoa #HHGoa2026 #BuildInGoa`,
+  ];
+
+  const currentTweetText = tweetOptions[tweetPresetIndex % tweetOptions.length];
+
   const handleShareToX = () => {
     handleCopyClipboard();
-
-    const text = encodeURIComponent(
-      `Just generated my official @HackerHouseGoa frame! See you in the sun. 🌴 #Goa2026 #FrameInGoa`
-    );
-    const intentUrl = `https://x.com/intent/tweet?text=${text}`;
+    const intentUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(currentTweetText)}`;
     window.open(intentUrl, '_blank', 'noopener,noreferrer');
   };
 
@@ -153,7 +158,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
         />
       </div>
 
-      {/* Action Buttons & Tweet Text Note */}
+      {/* Action Buttons & Dynamic Tweet Box */}
       <div className="w-full max-w-[500px] space-y-3">
         {/* DOWNLOAD PNG Button */}
         <button
@@ -175,10 +180,27 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
           <span>SHARE TO X</span>
         </button>
 
-        {/* Tweet text note */}
-        <p className="text-xs text-center text-slate-200 font-mono pt-1">
-          Tweet text: "Just generated my official @HackerHouseGoa frame! See you in the sun. 🌴 #Goa2026 #FrameInGoa"
-        </p>
+        {/* Dynamic Tweet Preview Box */}
+        <div className="bg-black/40 border border-[#FFECA8]/30 rounded-xl p-3.5 text-left space-y-2 backdrop-blur-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono font-bold text-[#FFECA8] flex items-center gap-1.5 uppercase">
+              <MessageSquare className="w-3.5 h-3.5 text-[#FF007A]" />
+              X / TWEET PRESET #{tweetPresetIndex + 1}
+            </span>
+            <button
+              type="button"
+              onClick={() => setTweetPresetIndex((prev) => (prev + 1) % tweetOptions.length)}
+              className="text-xs font-bold text-[#FFECA8] hover:text-white flex items-center gap-1 cursor-pointer"
+              title="Cycle tweet copy style"
+            >
+              <RefreshCw className="w-3 h-3 text-[#FF007A]" />
+              <span>Change style</span>
+            </button>
+          </div>
+          <p className="text-xs font-mono text-slate-200 whitespace-pre-line leading-relaxed bg-black/30 p-2.5 rounded-lg border border-white/10 select-all">
+            {currentTweetText}
+          </p>
+        </div>
 
         {copied && (
           <div className="text-center pt-1">
